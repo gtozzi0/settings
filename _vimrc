@@ -130,7 +130,7 @@ let g:miniBufExplorerAutoStart = 0  "no auto-start
 " ctrl-p
 let g:ctrlp_max_files = 100000
 
-" https://robots.thoughtbot.com/faster-grepping-in
+" https://robots.thoughtbot.com/faster-grepping-in-vim
 " The Silver Searcher
 if executable('ag')
   " Use ag over grep
