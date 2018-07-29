@@ -1,0 +1,1135 @@
+ victor    - cgb378 
+ javier    - ejl034
+ cyril     - kjdx43
+ siassi    - wvq473
+ hetal     - ehp005
+ mirela    - cqw734
+ anjana    - xnv437
+ hui       - qpc487
+ amy       - wrb843
+ shen      - xqv367
+ krist     - a18887
+ hanna     - egh007
+ prabhakar - rdc783
+ weijian   - wqhk47
+ nik       - vkf683
+ knottek   - bdfg34
+
+My Commerce ID: 10306103
+
+Open Grok PW: q893kB
+
+ -------------------- Android Properties --------------------
+this file has definition of recognizable os level properties: "property_service.c"
+
+ -------------------- Show App Icon in Launcher --------------------
+        <activity android:name=".framework.MainActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <!-- show it in launcher-->
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+ -------------------- Persistent Logs --------------------
+adb pull /data/data/com.msi.loggerutilities/LogcatSystem/
+
+ -------------------- GPS Coordinates --------------------
+adb logcat | grep "V CAP:UseCase: Location update"
+
+ -------------------- DELETE VIDEOS --------------------
+adb shell rm -rf /video/msiCamera/*
+adb shell rm -rf /data/data/com.motorolasolutions.capture/databases/Metadata.db
+adb shell rm -rf /video/xml/xmlFiles/*
+
+ -------------------- BYPASSING OOBE --------------------
+adb root
+adb push Country.txt /data/fusion
+adb push deviceconfig_outofboxexperience.xml /data/fusion/
+
+F1R:
+adb push deviceconfig_N7001.xml /data/fusion/deviceconfig.xml
+
+F2:
+adb push deviceconfig_N7002.xml /data/fusion/deviceconfig.xml
+
+ -------------------- LITTLE KERNEL LOGS --------------------
+fastboot oem get-log
+
+ -------------------- SECURE DEVICE CMDS --------------------
+fastboot oem device-info (running this returns the below output)
+
+(bootloader)    Device tampered: false
+(bootloader)    Device unlocked: false
+(bootloader)    Device critical unlocked: false
+(bootloader)    Device is lab  : true              // true means lab part installed               
+(bootloader)    Device secure  : true              // true means device has fuses blown
+(bootloader)    ld-timer: expired                  // timer
+(bootloader)    Lab ID         : 00007F7A8C7D      //this is the number that you have to provide to get lab cert
+(bootloader)    Charger screen enabled: true
+(bootloader)    Display panel:
+(bootloader)    Charger firmware: Unknown
+OKAY [  1.104s]
+finished. total time: 1.105s
+
+
+* Install labcert:
+fastboot flash labpart  yourlabcertforthedevice
+
+* Remove labcert:
+fastboot flash erase labpart
+
+* Get timer value:
+fastboot oem get-ldtimer
+
+* Expire timer:
+fastboot oem set-ldtimer 128
+
+* Get Lab ID:
+fastboot getvar labid
+
+* Flash Lab Cert:
+fastboot flash labpart <cert>
+
+* To RamDump and JTAG secure devices:
+fastboot flash apdp dp_AP_signed.mbn
+fastboot flash msadp dp_MSA_signed.mbn
+
+fastboot erase apdp
+fastboot erase msadp
+
+(for user builds, extra step, does not persist):
+adb shell setprop msi.enable.ramdump 1
+
+ -------------------- GENERAL --------------------
+* building the kernel builds the device tree
+* sudo chmod a+w /devspace/fusion2  (need to use full path for any subdirectories)
+
+ -------------------- TOOLCHAIN --------------------
+Global flags and toolchain selection:
+    build/core/combo/TARGET_linux-arm64.mk
+
+$(TARGET_TOOLCHAIN_ROOT)/bin/aarch64-linux-android-
+    prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin/<binary>
+
+ -------------------- BUG REPORT --------------------
+adb shell setprop ctl.start msi_bugreport
+OR
+adb root
+adb shell "/system/bin/sh /system/etc/init.launchbugreport.sh"
+
+ -------------------- TESTING EVENTS --------------------
+*  getevent command line tool:
+
+  $ adb shell su getevent -lt
+
+ -------------------- KERNEL --------------------
+Example of touched files for kernel driver integration:
+
+  arch/arm/boot/dts/qcom/msm8953-msi-common.dtsi
+  arch/arm/boot/dts/qcom/msm8953-msi-pinctrl-common.dtsi
+  arch/arm64/configs/msi_8x53-perf_defconfig
+  arch/arm64/configs/msi_8x53_defconfig
+  drivers/misc/Kconfig  
+  drivers/misc/Makefile
+  drivers/misc/m7_11242.c
+  drivers/misc/m7audio.h
+  drivers/misc/m7audio.c
+
+ -------------------- INIT.TC --------------------
+Start bins based on property:
+
+    on property:ro.build.type=userdebug
+    start test_service
+    start TCMDServer
+    start XCMPListner
+    start testing
+
+ -------------------- Key Event Trace --------------------
+Tracing the source code of the 5.1 Source for the View Class. It would seem that dispatchKeyEvent() is the first method called by the system. Overloading it will prevent any and all key events from being called unless the base version is called.
+
+dispatchKeyEvent()'s first move is to attempt to pass the event to an onKeyListener if there is one. This is when onKey() is called. If the onKey() implementation returns true, dispatchKeyEvent() will return there and other events will not be called.
+
+If there is no onKeyListener or the onKeyListener's onKey() method returned false, dispatchKeyEvent() will then call the KeyEvent's dispatch() method. Which will then in turn call all the methods in the KeyEvent.Callback interface on your view. This includes onKeyDown() and onKeyUp().
+
+ -------------------- SELinux --------------------
+* Look here for examples:
+system/sepolicy
+
+* MSI SE policies:
+vendor/msi/sepolicy
+
+* audio2allow tool:
+
+adb shell "su root dmesg" > denies.txt
+cat /vagrant_data/denies.txt | ./external/selinux/prebuilts/bin/audit2allow -p out/target/product/f2_8953/root/sepolicy
+
+ -------------------- ADB COMMANDS --------------------
+https://developer.android.com/reference/android/provider/Settings.System.html
+
+* Screen Brightness:
+
+adb shell settings get system screen_brightness
+adb shell settings put system screen_brightness 255
+
+adb shell settings get system screen_brightness_mode
+adb shell settings put system screen_brightness_mode 1
+
+
+* Wireless:
+
+adb shell settings get secure bluetooth_address
+
+* Key Codes:
+
+adb shell input keyevent KEYCODE_POWER
+
+ -------------------- SHOW GPIO STATES --------------------
+cat /sys/kernel/debug/gpio
+cat /proc/bus/input/devices
+
+ -------------------- SYSTEM CALLS --------------------
+system("am start -n com.android.tools/com.android.tools.StopAutoRotation");
+system("am force-stop com.android.tools");
+
+------> Get Android Env Variable
+sdCardPath = getenv("EXTERNAL_STORAGE");
+
+------> Run System Process
+if (!(cmd = popen("/system/bin/ls /mnt/media_rw", "r")))
+{
+    mCmdRes->setStatus(TCMD_RES_ERR_GEN_FAIL, NULL_STRING);
+    return false;
+}
+
+while(fgets(sdCardId, sizeof(sdCardId), cmd) != NULL)
+    TC_DBG_TRACE("%s", sdCardId);   //TODO
+
+pclose(cmd);
+
+------> Check If File is Directory
+    const char* folder = "/tmp";
+    struct stat sb;
+
+    if (stat(folderr, &sb) == 0 && S_ISDIR(sb.st_mode))
+        // then is a directory
+
+------> GOOD EXAMPLE HERE:
+hardware/libhardware/hardware.c
+
+------> Getting Input Events
+{
+    fd0 = open(GPIO_KEYS_EVENT_0, O_RDONLY);
+    fd1 = open(GPIO_KEYS_EVENT_1, O_RDONLY);
+    fd2 = open(MSI_KEYS_EVENT, O_RDONLY);
+
+    if (fd0 < 0 || fd1 < 0 || fd2 < 0)
+    {
+        close(fd0); close(fd1); close(fd2);
+        return -1;
+    }
+
+    /* Set all file descriptors with non-blocking flag */
+    flags = fcntl(fd0, F_GETFL, 0);
+    fcntl(fd0, F_SETFL, flags | O_NONBLOCK);
+
+    flags = fcntl(fd0, F_GETFL, 0);
+    fcntl(fd1, F_SETFL, flags | O_NONBLOCK);
+ 
+    flags = fcntl(fd0, F_GETFL, 0);
+    fcntl(fd2, F_SETFL, flags | O_NONBLOCK);
+
+    /* Add all file descriptors to file descriptor set */
+    FD_ZERO(&readfds);
+    FD_SET(fd0, &readfds);
+    FD_SET(fd1, &readfds);
+    FD_SET(fd2, &readfds);
+
+    /* Wait for an event to occur */
+    while (nready == 0)
+        nready = select(fd2 + 1, &readfds, NULL, NULL, NULL);
+
+    /* If read returns -1, no event was read from file descriptor */
+    if ( read(fd0, &ev0, sizeof(struct input_event)) > 0 )
+        keycode = ev0.code;
+
+    if ( read(fd1, &ev1, sizeof(struct input_event)) > 0 )
+        keycode = ev1.code;
+
+    if ( read(fd2, &ev2, sizeof(struct input_event)) > 0 )
+        keycode = ev2.code;
+}
+
+------> Using signals
+    // Setup sigaction to call threadHandler when the SIGRTMAX signal is triggered
+    struct sigaction sigact;
+    sigemptyset(&sigact.sa_mask);
+    sigact.sa_flags = SA_RESTART;
+    sigact.sa_handler = threadHandler;
+
+    if(sigaction(SIGRTMAX, &sigact, NULL) == -1)
+    {
+        perror("sigaction failed");
+        return false;
+    }
+
+Now, we need to generate the SIGRTMAX signal. We will use a timer expiration to do so:
+
+    // Create sigevent that will be passed to timer creation. When timer expires,
+    // timer will trigger the SIGRTMAX signal, which cause threadHandler to be called.
+    struct sigevent sigev;
+    sigev.sigev_notify = SIGEV_SIGNAL;
+    sigev.sigev_signo = SIGRTMAX;
+
+    if (timer_create(CLOCK_REALTIME, &sigev, &mTid) == 0)
+    {
+        mState = TIMER_STATE_CREATED;
+        return true;
+    }
+
+Here is static declaration of the signal handler function:
+    
+    static void Timer::threadHandler(int aSigNo);
+
+ -------------------- Non-Blocking File Descriptor --------------------
+See example in: /external/android-clat/tun.c -> set_nonblocking
+
+ -------------------- M7 Interface --------------------
+vendor/msi/m7interface/java/com/lnt/M7interface/
+
+Example:
+M7I2CMessage.setM7NativeCallHandler(M7NativeCallHandler.getInstance());
+Response response = M7I2CMessage.setM7I2CMessageRequest(Constants.GET_VERSION_REQUEST, new byte[0]);
+
+
+ -------------------- JAVA --------------------
+Picking which java and javac binary to use:
+sudo update-alternatives --config java
+sudo update-alternatives --config javac
+
+Jack Server:
+~/.jack-server/config.properties
+  jack.server.max-service=1
+
+  Add this parameter to make: -Xmx2g
+
+  In build/core/config.mk:
+  APICHECK_COMMAND := $(APICHECK) -JXmx5500m -J"classpath $(APICHECK_CLASSPATH)"
+  
+-------------------- HARDWARE --------------------
+- gpio voltage options:
+  - device spec, page 9 at the bottom, "Pad-voltage groupings for baseband circuits"
+  -lm48512 doc, page 5, "Logic Input High Voltage" = 1.35V limit min
+
+-------------------- Flashing --------------------
+- put into bootloader mode
+  * adb reboot bootloader
+
+- put board into edl mode for blankflashing:
+  * adb shell reboot edl
+  * alternatively, can delete the SBL to force this mode
+
+-------------------- ADB Stuff --------------------
+- To see button presses using logcat on an Android device you can run the following:
+  * adb logcat | grep -i pui
+
+-reboot phone
+  * adb reboot
+
+-pushing with root privilege (untested)
+  * adb root
+  * adb push foo stuff
+
+-editing files on the android system
+  * adb root                          // use this first, OR use "su" with the below mount commands
+  * adb shell                         // shell into the phone
+  * # su
+  * # mount -o rw,remount /system     // remount /system as RW
+  * # mount -o ro,remount /system     // when done making changes, remount as RO
+
+-------------------- Flashing Kernel to QRD --------------------
+* adb reboot bootloader                              - puts device in boot mode
+* sudo fastboot devices                              - this should return a value, indicating phone was detected
+* sudo fastboot flash boot <path to kernel>/boot.img - downloads kernel image to phone
+* sudo fastboot reboot                               - reboot phone with new kernel 
+
+-------------------- Pushing Apps to QRD via ADB --------------------
+adb shell mount -o rw,remount /system
+adb push FusionMTA.apk /system/app
+adb shell am force-stop FusionMTA.apk
+
+adb install <apk>
+adb install -r <apk>
+
+-------------------- WLAN/BT --------------------
+WCNSS_qcom_wlan_nv.bin
+
+If not already available, a NV binary file is generated when using btnvtool.
+1. Change the BT address:
+  a. Use the ‘btnvtool’ command on the adb shell.
+     # btnvtool –b xx.xx.xx.xx.xx.xx
+  b. Once this command succeeds, find the .bt_nv.bin file in the /persist directory on the target.
+
+2. Configure the BT profile:
+  a. Dynamic profile enabler
+     init.qcom.bt.sh file
+       setprop ro.qualcomm.bluetooth.opp true
+       setprop ro.qualcomm.bluetooth.ftp true
+       setprop ro.qualcomm.bluetooth.nap true
+       setprop ro.bluetooth.sap true
+       setprop ro.bluetooth.dun true
+       setprop ro.qualcomm.bluetooth.hsp true
+       setprop ro.qualcomm.bluetooth.hfp true
+       setprop ro.qualcomm.bluetooth.pbap true
+       setprop ro.qualcomm.bluetooth.map true
+       setprop ro.bluetooth.hfp.ver 1.6
+  b. Enabling hfp client
+       System.prop to turn on hfp client
+         bluetooth.hfp.client=1
+
+-------------------- NOTABLE Files/Directories --------------------
+
+ __________ KERNEL DTS __________
+* /drivers/spmi/spmi.c                            //SPMI driver source code. PMIC drivers utilize SPMI buses to access the PMIC registers
+* out/target/product/Si700/boot.img          // kernel image
+* kernel/arch/arm/boot/dts/qcom                   // device tree files
+* hardware/qcom/audio/hal/msm8916/platform.c      // the sound card mixer file is chosen in here
+* kernel/Documentation/devicetree/bindings        // documentation for device tree bindings
+* Project_Root/drivers/clk/qcom/clock-gcc-8937.c 
+* kernel/drivers/pinctrl/qcom/pinctrl-msm8937.c   // dtsi strings in here
+
+* msm8937-regulator.dtsi && msm-pm8937-rpm-regulator.dtsi     // regulator dt files
+* kernel/Documentation/bindings/input/misc                    // sensor device tree documentation
+
+ __________ JAVA FILES __________
+Android Power Stuff
+* PhoneWindowManager.java
+* GlobalActions.java
+* WindowManagerPolicy.java
+* ShutdownThread.Java
+* PowerManagerService.java
+* com_android_server_power_PowerManagerService.cpp
+* android_reboot.c
+
+ __________ ANDROID SETTINGS __________
+* frameworks/base/core/java/android/view/ViewConfiguration.java
+  - more config stuff that is code based, not sure exactly what this is vs the .xml
+
+* frameworks/base/core/res/res/values/config.xml
+  - config various global params here including:
+    - globalActionsKeyTimeout: time needed before power down button opens up power down menu
+
+* frameworks/base/packages/SettingsProvider/res/values/defaults.xml 
+  - The system settings are loaded via database: 
+    frameworks/base/packages/SettingsProvider/src/com/android/providers/settings/DatabaseHelper.java 
+    private void loadSettings(SQLiteDatabase db) { 
+    loadSystemSettings(db); 
+
+* Its also worth checking the device directory for overlays which just override the original files:
+  - device/<company-name>/<product-name>/overlay/frameworks/base/core/res/res/values/config.xml
+
+* frameworks/base/core/res/res/drawable-nodpi/default_wallpaper.jpg
+  - default wallpaper
+
+* disabling keyboard haptics
+  - platform/packages/inputmethods/LatinIME/java/res/values/config-common.xml
+
+* Doing stuff from ADB (auto brightness here):
+  - adb shell settings get system screen_brightness_mode  
+  - adb shell settings put system screen_brightness_mode 1
+  - "adb shell settings" to show help
+  - https://developer.android.com/reference/android/provider/Settings.Secure.html
+  - https://developer.android.com/reference/android/provider/Settings.Global.html
+  - https://developer.android.com/reference/android/provider/Settings.System.html
+
+* List packages and hide packages
+ - adb shell pm list packages
+ - adb shell pm hide "packagename" (unhide works to)
+ - adb shell pm disable "packagename"
+
+* Manifest Permissions:
+ - /frameworks/base/data/etc/platform.xml
+
+ __________ BUTTONS/KEYS SETTINGS __________
+* PhoneWindowManager.java
+
+-------------------- Notable Documents --------------------
+* MSM8937 Device Specification          - page 9   - shows the pad voltage groupings for pins
+* MSM8937 Hardware Register Description - page 801 - TLMM GPIO registers
+
+-------------------- Building --------------------
+Android:
+vendor/msi/tools/scripts/build_android.sh n -s (where n is number of processors and -s option will output to screen rather than log)
+
+* export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
+
+Kernel:
+* cd to /devspace/fusion2
+* source build/envsetup.sh
+// lunch msm8937_64-userdebug
+* choosecombo 1 Si700 eng
+* make -j4 kernel
+
+To remove object files:
+make clean
+, page 41, page 41
+To remove all the generated files:
+make distclean
+
+-------------------- MSM8937 Processors --------------------
+* Octa Cortex A53 - applications processor
+* LPASS QDSP6     - low power audio subsystem, audio and sensor processing
+* Modem QDSP6     - modem stuff
+* RPM Cortex M3   - resource power manager firmware 
+
+-------------------- Device Tree --------------------
+./out/target/product/Si700/obj/KERNEL_OBJ/scripts/dtc/dtc -I dtb -O dts -o msm8937-pmi8950-fusion2-p1a.dts out/target/product/Si700/obj/KERNEL_OBJ/arch/arm64/boot/dts/qcom/msm8937-pmi8950-fusion2-p1a.dtb
+
+out/target/product/f1r_8053/obj/KERNEL_OBJ/scripts/dtc/dtc -I dtb -O dts -o apq8053-f1r-p2c.dts out/target/product/f1r_8053/obj/KERNEL_OBJ/arch/arm64/boot/dts/qcom/apq8053-f1r-p2c.dtb
+
+out/target/product/amp_sdm660_64/obj/KERNEL_OBJ/scripts/dtc/dtc -I dtb -O dts -o amp_sdm660_64.dts out/target/product/amp_sdm660_64/obj/KERNEL_OBJ/arch/arm64/boot/dts/qcom/sdm660-msi-amp-cb1.dtb
+
+  * kernel/arch/arm/boot/dts/qcom
+  * arch/arm/boot/dts/Makefile
+
+FUSION 1 CHANGE LOG
+HLOS -> device/qcom/msm8974: audio changes in here
+
+./device/qcom/msm8937_32/mixer_paths.xml
+linux audio overview - page 12, page 41
+
+
+cat /proc/iomem -> show physical memory map that kernel sees at runtime
+
+
+The analog portion of codec is named the hardware codec. The digital part is in the MSM (main ic).
+Registers in digital part are programmed via the AHB bus. Registers in the hardware codec are programmed via SPMI.
+The SPDM interface communicates b/t the analog and digital codecs. 
+
+-------------------- Adding Kernel Driver to Android Build Example --------------------
+Hall Input Driver:
+https://gerrit.mot-solutions.com/#/c/101/
+https://gerrit.mot-solutions.com/#/c/200/
+https://gerrit.mot-solutions.com/#/c/206/
+
+-------------------- FUSION 2 FILES --------------------
+kernel/drivers/pinctrl/qcom/pinctrl-msm8952.c
+
+-------------------- Fusion 1 --------------------
+MSM8917: fusion 1 chipset
+WCD9320: external codec used by fusion 1
+  TODO: Check to see what code was overlaid by Fusion 1 developers. These
+        same changes could be applied to the internal codec on fusion 2.
+
+External PA Control:
+
+GPIO_79 = APQ_CLASS_D_EN        (on APQ)
+MPP_01 (pin 33) = CLASS_D_EN    (on PM8841) 
+
+-------------------- Audio --------------------
+PM8937 Mixer Paths: 80-P2468-5C , page 26 
+PM8953 Mixer Paths: 80-P2472-5C , page 29
+
+
+Grep for this string in mixer_paths:
+<!-- These are actual sound device specific mixer settings -->
+
+        I2S         PDM             (pins on PM)
+MSM8937 ---> DCODEC ---> PM8937 ---> EARO_P/EARO_M
+
+
+                   I2S         PDM             (pins on PM)
+MSM8937 ---> LPASS ---> DCODEC ---> PM8937 ---> EARO_P/EARO_M
+
+ADSP:
+ACDB (page 45 LAAO): static database onthe apps processor. 
+It contains all tuning/calibration parameters for the LPASS and WCD analog codec
+
+
+-------------------- Pin Muxing--------------------
+<FUSION1> 
+(example of setting up gpio and toggling)
+arch/arm/mach-msm/board-8974-gpiomux.c
+arch/arm/boot/dts/msm-pm8841.dtsi/msm8974.dtsi
+
+TLMMChipset.xml - pin muxing in SBL
+DALTLMMState.c
+
+-------------------- Boot Stuff --------------------
+* You can reboot the QRD into edl mode (boot mode) by sending (instead of deleting the SBL):
+  adb shell reboot edl
+
+fastboot flash modem <path to NON-HLOS.bin> or <path to APQ.bin>
+fastboot flash sbl1 <path to sbl1.mbn>
+fastboot flash rpm <path to rpm.mbn>
+fastboot flash tz <path to tz.mbn>
+fastboot flash devcfg <path to devcfg.mbn>
+fastboot flash dsp <path to adspso.bin>
+fastboot flash adsp <path to dsp2.mbn>
+fastboot flash aboot <path to emmc_appsboot.mbn >
+fastboot flash cmnlib <path to cmnlib.mbn >
+fastboot flash cmnlib64 <path to cmnlib64.mbn >
+fastboot flash keymaster <path to keymaster.mbn >
+fastboot flash boot <path to boot.img>
+fastboot flash system <path to system.img>
+fastboot flash userdata <path to userdata.img>
+fastboot flash persist <path to persist.img>
+fastboot flash recovery <path to recovery.img>
+fastboot flash cache <path to cache.img>
+
+
+-------------------- Device Tree --------------------
+* For MSM8937 GPIO function select, DT gets strings from this file: 
+  * pinctrl-msm8937.c
+
+* For PMIC GPIOs, DT gets strings from this file: 
+  * qpnp-pin.c
+
+arch/arm/boot/dts/qcom:
+  * msm8937.dtsi
+  * msm-pm8937.dtsi
+  * msm-pmi8950.dtsi
+  * msm8937-pm.dtsi
+
+  * msm8937-pmi8950-mtp.dtsi
+  * msm8937-pmi8950-mtp.dts
+
+  * msm8937-mtp.dtsi
+    * made PM and PMI GPIO/MPP final configs here
+    * TODO: make sensor changes in this file?
+
+  * msm8937-pinctrl.dtsi
+    * TODO: make sensor pin mux changes to I2C, reset line, and interrupt lines
+
+  * msm8937-regulator.dtsi
+  * msm-pm8937-rpm-regulator.dtsi   (regulator pad settings) 
+
+
+First, the label ("xillybus") and entry’s name ("xillybus@50000000"). The label could have been omitted altogether, and the entry’s node name should stick to this format (some-name@address), so that a consistent entry is generated in /sys (/sys/devices/axi.0/50000000.xillybus/ in this case). The data in this device tree entry will appear in /proc/device-tree/axi@0/xillybus@50000000/, but that’s definitely not the way to access it from within the kernel.
+
+
+-------------------- Non-HLOS --------------------
+Change processor permissions on peripherals:
+  QUPAC_8937_Access.xml
+  PlatformIO_MTP.xml
+
+-------------------- Sensors --------------------
+Sensor Logcat:
+adb logcat -v time Sensors:* libsensor1:* qcom_sensors_hal:* *:S | tee logcat.txt
+
+   ID        PRIMARY         SECONDARY
+    --------  --------------  --------------
+    0         Accelerometer   Temperature
+    10        Gyro            Temperature
+    20        Magnetometer    Temperature
+    30        Pressure        Temperature
+    40        Proximity       Ambient light
+    50        Humidity        Temperature
+    60        RGB             Color Temperature/Clear
+    70        SAR             Specific Absorption Rate
+    80        HallEffect      none
+    90        HeartRate       Raw data(Optional)
+    100       Ultra-violet    Ambient light
+    220       Step            none
+    222       Step Count      none
+    224       SMD             none
+    226       GameRV          none
+    228       IR Gesture      Proximity
+    230       Double-tap      Single-tap
+    240-249   OEM-defined     OEM-defined
+
+QRD Sensors:
+  * BMA253   - Accelerometer - 0
+  * TMD27723 - ALS/Proximity Sensor - 40
+  * AK09911C - Magnetometer - 20
+
+Fusion 2 Sensors:
+  * KXG03    - 6-Axis (Accelerometer & Gyroscope)
+  * LPS25H   - Pressure Sensor 
+  * AK09912  - Magnetometer
+  * ILS29038 - Light/Prox
+
+Fusion 1 Sensors:
+  * L3GD20H - Gyroscope
+
+__________________________________________________
+Identifying Sensors in QXDM Logs
+
+* Looking at the code, it refers to data_type in SMGR structures. You can enable debug flag below in
+  sns_smgr_sensor_uimg.c to enable more logging if you want 
+
+//#define SNS_SMGR_SAMPLING_DEBUG <== UNCOMMENT this 
+
+Please keep in mind there are two list for sensor #s - one in DDF - see enum "sns_ddf_sensor_e" in (sns_ddf_common.h) and other one in SMGR (sns_smgr_common_v01.h) 
+
+SMGR 
+---------- 
+ID PRIMARY SECONDARY 
+-------- -------------- -------------- 
+0 Accelerometer Temperature 
+10 Gyro Temperature 
+20 Magnetometer Temperature 
+30 Pressure Temperature 
+40 Proximity Ambient light 
+
+--------- 
+DDF SENSORS (sns_ddf_common.h) 
+--------- 
+typedef enum 
+{ 
+SNS_DDF_SENSOR__NONE, // 0 
+SNS_DDF_SENSOR_ACCEL, // 1 
+SNS_DDF_SENSOR_MAG, // 2 
+SNS_DDF_SENSOR_GYRO, // 3 
+SNS_DDF_SENSOR_TEMP, // 4 
+SNS_DDF_SENSOR_PROXIMITY, // 5 
+SNS_DDF_SENSOR_AMBIENT, // 6 
+SNS_DDF_SENSOR_PRESSURE, // 7
+
+--------- 
+ATTRIBUTES (sns_ddf_attrib.h)
+--------- 
+typedef enum
+{
+    SNS_DDF_ATTRIB_POWER_INFO,          // 0
+    SNS_DDF_ATTRIB_POWER_STATE,         // 1
+    SNS_DDF_ATTRIB_DELAYS,              // 2
+    SNS_DDF_ATTRIB_RANGE,               // 3
+    SNS_DDF_ATTRIB_RESOLUTION_ADC,      // 4
+    SNS_DDF_ATTRIB_RESOLUTION,          // 5
+    SNS_DDF_ATTRIB_LOWPASS,             // 6
+    SNS_DDF_ATTRIB_MOTION_DETECT,       // 7
+    SNS_DDF_ATTRIB_DRIVER_INFO,         // 8
+    SNS_DDF_ATTRIB_DEVICE_INFO,         // 9
+    SNS_DDF_ATTRIB_THRESHOLD,           // 10
+    SNS_DDF_ATTRIB_ACCURACY,            // 11
+    SNS_DDF_ATTRIB_BIAS,                // 12
+    SNS_DDF_ATTRIB_ODR,                 // 13
+    SNS_DDF_ATTRIB_SUPPORTED_ODR_LIST,  // 14
+    SNS_DDF_ATTRIB_REGISTRY_GROUP,      // 15
+    SNS_DDF_ATTRIB_IO_REGISTER,         // 16
+    SNS_DDF_ATTRIB_FIFO,                // 17
+    SNS_DDF_ATTRIB_ODR_TOLERANCE,       // 18
+    SNS_DDF_ATTRIB_FILTER_DELAY         // 19
+
+} sns_ddf_attribute_e;
+
+--------- 
+ERROR STATUSES (sns_ddf_common.h)
+--------- 
+typedef enum
+{
+    SNS_DDF_SUCCESS,          /**< No error. */
+    SNS_DDF_PENDING,          /**< Status cannot be provided immediately and will
+                                   be returned asynchronously instead. */
+    SNS_DDF_EFAIL,            /**< Unspecified error. */
+    SNS_DDF_ENOMEM,           /**< Insufficient memory to process the request. */
+    SNS_DDF_EINVALID_DATA,    /**< Invalid data found in input buffer. */
+    SNS_DDF_EINVALID_PARAM,   /**< Invalid value of an input parameter. */
+    SNS_DDF_EINVALID_ATTR,    /**< Invalid attribute ID. */
+    SNS_DDF_EBUS,             /**< Failure in the underlying bus or bus driver. */
+    SNS_DDF_EDEVICE,          /**< Failure in the device. */
+    SNS_DDF_EDATA_BOUND,      /**< One or more data samples are out-of-bound. */
+    SNS_DDF_EDEVICE_BUSY,     /**< Device is busy and can't service the request. */
+    SNS_DDF_EINVALID_TEST,    /**< Invalid test case requested for this device. */
+    SNS_DDF_EINVALID_DAF_REQ, /**< Invalid Driver Access request. */
+    SNS_DDF_ELAST
+} sns_ddf_status_e;
+
+__________________________________________________
+Customizing Axes
+* page 155 in Sensor Deep Dive
+  * ADSP components follow the SAE coordinate system
+  * Android follows different coordinate system. Conversion from SAE to Android is done in HAL.
+
+  * Sensor vendor defines the orientation of the IC relative to X,Y,Z axes
+
+* x=0, y=1, z=2
+__________________________________________________
+Sensor Manager
+  * i2c configuration done here: 
+    * adsp_proc/Sensors/smgr/src/common/sns_smgr_hw.c -> sns_hw_gpio_config_i2c_sda_scl() 
+  * sensor dd init done here:
+    * adsp_proc/Sensors/smgr/src/sns_smgr_init.c -> sns_smgr_dd_init(void) -> line 1329 is dd init function call
+  * function ptr init here:
+    * sns_smgr_reg.c -> sns_smgr_parse_reg_devinfo_resp()
+
+  * sns_msgr_s structure definition located in "sns_smgr_main.h"
+__________________________________________________
+
+Adding a New Sensor
+  * config regulator
+    * dt - need to specify vdd-supply and vio-supply
+    * config the pin ctrl (active and sleep) for I2C pins and interrupt pins
+    * config the I2C bus (including voltage regulator supplying it)
+
+Debugging Technique in ADSP:
+1. In "sns_ddf_util.h", uncomment this line:
+  #define DD_DEBUG
+
+2. In file we want to add debug:
+#include "sns_ddf_util.h"
+...
+DDF_MSG_0(FATAL, "MY STRING");
+DDF_MSG_1(FATAL, "Value = %u", foo);
+__________________________________________________
+
+sensor sensor
+
+sns_ddf_delay(uint32_t usec)
+
+Push Config File:
+adb root
+adb remount
+adb shell rm vendor/etc/sensors/sensor_def_qcomdev.conf
+adb push sensor_def_qcomdev.conf vendor/etc/sensors/sensor_def_qcomdev.conf
+adb shell chmod 644 vendor/etc/sensors/sensor_def_qcomdev.conf
+adb shell rm /persist/sensors/sns.reg
+adb shell sync
+adb reboot
+
+adb pull /etc/sensors/sensor_def_qcomdev.conf
+
+QXDM Debugging:
+adb shell stop sensors
+adb shell "echo 'related' > /sys/bus/msm_subsys/devices/subsys2/restart_level"
+adb shell "echo 'restart' > /sys/kernel/debug/msm_subsys/adsp"
+adb shell start sensors
+
+NEW PROCEDURE:
+adb shell stop sensors
+adb shell "echo 'related' > /sys/bus/msm_subsys/devices/subsys2/restart_level"
+In QXDM: "send_data 75 37 03 48 00"
+adb shell start sensors
+
+
+
+Check ADSP Subsys Number:
+cat /sys/bus/msm_subsys/devices/subsys1/name
+
+ADB Sensor Debug Commands:
+adb shell sns_regedit_ssi -r
+adb shell sns_dsps_tc0001
+adb shell sns_cm_test
+
+adb shell sns_cm_test -s 1 (sensor id)
+
+----- AP SENSOR LOGGING -----
+
+1. To enable AP sensor log in run time mode:
+adb root
+adb wait-for-device
+adb shell setprop debug.qualcomm.sns.daemon 1
+adb shell setprop debug.qualcomm.sns.libsensor1 1
+adb shell setprop persist.debug.sensors.hal 1
+adb shell stop
+adb shell stop sensors
+adb shell start sensors
+adb shell start
+2. To enable AP sensor log, need reboot device:
+adb root
+adb wait-for-device
+adb remount
+adb pull /system/build.prop .
+vi build.prop
+<Make change to build.prop>
+persist.debug.sensors.hal=1
+debug.qualcomm.sns.daemon=1
+debug.qualcomm.sns.libsensor1=1
+<Make change to build.prop>
+adb push build.prop /system
+adb shell chmod 644 /system/build.prop
+adb shell sync
+adb reboot
+3. To enable AP sensor log, need rebuild Linux/android images and burn the new images;
+device/qcom/msm8994/system.prop
+audio.offload.multiple.enabled=true
++persist.debug.sensors.hal=1
++debug.qualcomm.sns.daemon=1
++debug.qualcomm.sns.libsensor1=1
+4. To filter sensor log from logcat log
+# adb logcat -v time Sensors:* libsensor1:* qti_sensors_hal:* *:S | tee logcat.txt
+
+-------------------- TODO --------------------
+* Determine what algorithms we will be using in Fusion and determine if FIFO mode needed
+Again, from our side, we recommend you to operate sensor in FIFO side since otherwise you will see higher power numbers with algorithm like pedometer which sample at higher rate but report rate (i.e. ADSP wake-up from sensor FIFO) is less. If you don't have sensor FIFO support, ADSP would wake-up at sampling rate.
+
+-------------------- QSensorTest Source --------------------
+vendor\qcom\prop\sensors\QSensorTest
+
+-------------------- C FLAGS --------------------
+LOCAL_CFLAGS += -H
+LOCAL_CFLAGS += -v
+
+-------------------- Debugging Native Code --------------------
+* gdb
+    * adb forward tcp:5039 tcp:5039
+    * on target: gdbserver :5039 --attach 1234
+        * 5039 is TCP port for gdb to connect and 1234 is PID of our process
+    * on host: gdb <app_process>
+        * app process is a bin living on target device (/system/bin/TCMDServer)
+    * connect to gdb server (enter cmd in gdb shell): target remote :5039
+
+
+* ptrace
+* strace
+
+* debuggerd, tombstones
+    * ndk-stack, addr2line
+
+* systrace
+    * run from Android Device Monitor
+
+-------------------- AP Logging --------------------
+* turn off auto-rotate and auto-brightness in settings
+
+* execute these commands:
+adb remount
+adb pull /system/build.prop .
+
+* edit build.prop and add in these lines:
+persist.debug.sensors.hal=1
+debug.qualcomm.sns.daemon=1
+debug.qualcomm.sns.libsensor1=1
+
+* execute these commands:
+adb push build.prop /system
+adb shell chmod 644 /system/build.prop
+adb shell sync
+adb reboot
+
+* execute these commands:
+adb logcat -c
+adb logcat -v time Sensors:* libsensor1:* qti_sensors_hal:* QSensorTest:* *:S
+
+-------------------- MSM8937 --------------------
+* Hardware Register 
+  * p789 - gpio muxing
+
+-------------------- PM8937 --------------------
+* src-sel register (0x44) doesn't exist for the gpios
+
+* Device Spec
+  * p16 - drive strengths, VIN select
+  * p23 - default states at powerup, GPIO mux options
+
+All MPPs default to their high-Z state at powerup and must be configured after
+powerup for their intended purposes. All GPIOs default to 10 µA pull-down at
+powerup and must be configured after powerup for their intended purposes.
+
+Configure unused MPPs as 0 mA current sinks (high-Z) and unused GPIOs as digital
+inputs with their internal pull-downs enabled.
+
+-------------------- PMI8952 --------------------
+* Device Spec
+  * p27 - default states at powerup, GPIO mux options
+  * p30 - pad voltage stuff
+  * p64 - gpio/mpp voltage and current specifications
+
+GPIOS:
+  Available pad voltages is:
+    VDD_MSM_IO (1.8 V)
+
+MPPS:
+  Available pad voltages are:
+    VIN0 = VPH_PWR
+    VIN1 = VDD_MSM_IO (1.8 V)
+    VIN2 = VDD_MSM_IO (1.8 V)
+    VIN3 = VDD_MSM_IO (1.8 V)
+
+All GPIOs default to digital input with a 10 uA pulldown. All MPPs default to ?
+high-Z.
+
+Configure unused MPPs as 0 m A current sinks (high-Z) and GPIOs as digital inputs
+with their internal pulldowns enabled
+
+-------------------- Qualcomm Support --------------------
+Qualcomm Support Build ID:
+1) LA.UM.5.1-02110-8x37.0
+2) LA.UM.5.3.1-00610-89xx.0 
+3) Snapdragon_High_Med_2016.SPF.2.0 r15000.3
+   HLOS: LA.UM.5.6.r1-03800-89xx.0-1
+4) MSM8953.LA.2.0.2 ES4 0.0.014.1, LA.UM.5.9.r1-02300-8x53.0-1
+5) LA.UM.5.9.r1-04100-8x53.0-1
+
+ADSP: ADSP.8953.2.8-00148-00000-1 MPSS.JO.1.2-00360-8937_GENNS_PACK-1 
+
+Modem: MPSS.JO.1.2-00360-8937_GENNS_PACK-1 
+
+
+-------------------- TrustZone --------------------
+- Can delineate which processor gets control of things (ie I2C bus for example)
+non-hlos_snapdragon-high-med-2016-spf-1-1 / TZ.BF.4.0.5/trustzone_images/core/buses/qup_accesscontrol/bear/config/QUPAC_8953_Access.xml
+
+-------------------- Clocks --------------------
+FUSION 2
+
+BBCLK Stuff:
+  bb_clk2_pin (name of the clock in device tree)
+  xo_a_clk_src (name of the clock with src rate 19.2 MHz in debugfs)
+
+kernel/include/dt-bindings/clock/msm-clocks-8952.h (a listing of all available clocks)
+kernel/drivers/clk/msm/clock-gcc-8952.c
+kernel/include/linux/clk.h (clock API)
+kernel/drivers/clk/msm/clock.c (clock API source for device tree)
+kernel/drivers/clk/clkdev.c
+
+vendor/qcom/non-hlos/boot_images/core/systemdrivers/pmic/config/msm8937/pm_config_target.c (this might be handy later)
+
+FUSION 1:
+
+BBCLK Stuff
+  BBCLK2 -> XO_OUT_D1 -> cxo_d1_pin.c
+  /sys/kernel/debug/clk -> cxo_a_clk_src
+
+kernel/arch/arm/mach-msm/clock-8974.c
+kernel/arch/arm/mach-msm/clock-8226.c (fusion 1 made changes here)
+
+non-hlos-> pm8x41_pm_config_target.c
+
+
+-------------------- Fusion 1 --------------------
+  * stand alone mode should disable WiFi (NOPE, it does not)
+
+Launch Android Homescreen:
+  * adb shell am start -n com.android.launcher/com.android.launcher2.Launcher
+
+In order to get into adb on a "user" build, go into bootloader mode first (power up while holding volume down). 
+Then execute the below command. This is only good until the next power cycle.
+  * fastboot oem boot_mode usb_cfg=1
+
+Videos stored here:
+  * /video/msiCamera
+
+* Get Serial Number
+  > adb shell 
+  > getprop | grep vendor
+  > check vendor.msi.serialno
+
+Bringing Up Fusion Out of Box
+ > Follow the steps at "Transition to Secure Builds" at: 
+   http://twiki.mot-solutions.com/bin/view/AstroESS/DevelopmentEnvironment#Transition_to_Secure_Build
+
+* Lab Cert
+  > fastboot flash labpart labcert_xxxxxx.sig
+
+* Downloading Builds
+  > Get "blankflash" from user_debug, get "fastboot" from user_release
+
+* Vault -> https://vault.master.commandcentral.com
+
+* Using RM Tool
+  * RM Server Machine Name (instead of IP): AG017311
+  > need to stop all Motorola services and set them to manual
+  > need to schedule write job
+
+* Out-of-Box can be configured for either Vault use or Local use
+  > to enable Vault use, use the QRD code generated from Vault
+  > to enable SD card use, use the QRD code generated from RM tool
+  > the only way to switch between these, is to execute a OEM reboot job from RM (this will
+    take you back to the QRD scan screen on Fusion)
+
+* Flash QRD code again, Wipe out media
+  > fastboot -w
+
+* Use "ipconfig" to determine if USB has enumerated for wired RM updates
+
+  Fusion 1 SRs
+  CCMPD02074222 - speaker PA on
+
+* Pull Ninja Logs
+  > adb pull /data/local/tmp/logs/latest/ ./
+
+  adb wait-for-device root
+adb wait-for-device remount
+adb push TCMDServer /system/bin
+adb push TCMDClient /system/bin
+adb push TCMDApp.apk /system/app
+adb push XCMPListner /system/bin
+adb reboot
+
+
+/***** GETTING INPUT EVENTS *****/
+
+int ButtonDriver::getInputEvent()
+{
+    int fd0, fd1, fd2, flags;
+    int nready = 0, res = 0;
+    unsigned short keycode;
+    struct input_event ev0, ev1, ev2;
+    fd_set readfds;
+
+    fd0 = open(GPIO_KEYS_EVENT_0, O_RDONLY);
+    fd1 = open(GPIO_KEYS_EVENT_1, O_RDONLY);
+    fd2 = open(MSI_KEYS_EVENT, O_RDONLY);
+
+    if (fd0 < 0 || fd1 < 0 || fd2 < 0)
+    {
+        close(fd0); close(fd1); close(fd2);
+        TC_DBG_TRACE("Couldn't open an input event file descriptor!");
+        return -1;
+    }
+
+    /* Set all file descriptors with non-blocking flag */
+    flags = fcntl(fd0, F_GETFL, 0);
+    fcntl(fd0, F_SETFL, flags | O_NONBLOCK);
+
+    flags = fcntl(fd0, F_GETFL, 0);
+    fcntl(fd1, F_SETFL, flags | O_NONBLOCK);
+ 
+    flags = fcntl(fd0, F_GETFL, 0);
+    fcntl(fd2, F_SETFL, flags | O_NONBLOCK);
+
+    /* Add all file descriptors to file descriptor set */
+    FD_ZERO(&readfds);
+    FD_SET(fd0, &readfds);
+    FD_SET(fd1, &readfds);
+    FD_SET(fd2, &readfds);
+
+    /* Wait for a button press to occur */
+    while (nready == 0)
+        nready = select(fd2 + 1, &readfds, NULL, NULL, NULL);
+
+    /* If read returns -1, no event was read from file descriptor */
+    if ( read(fd0, &ev0, sizeof(struct input_event)) > 0 )
+        keycode = ev0.code;
+
+    if ( read(fd1, &ev1, sizeof(struct input_event)) > 0 )
+        keycode = ev1.code;
+
+    if ( read(fd2, &ev2, sizeof(struct input_event)) > 0 )
+        keycode = ev2.code;
+
+    /* The hex values assigned here are the values factory expects printed to screen */
+    switch (keycode)
+    {
+        case VOL_DOWN_KEY:
+            res = 0x04;
+            break;
+        case VOL_UP_KEY:
+            res = 0x02;
+            break;
+        case EMERG_KEY:
+            res = 0x08;
+            break;
+        case PTT_KEY:
+            res = 0x01;
+            break;
+        case PROG_1_KEY:
+            res = 0x10;
+            break;
+        case PROG_2_KEY:
+            res = 0x20;
+            break;
+        default:
+            res = -1;
+            break;
+    }
+
+    close(fd0); close(fd1); close(fd2);
+
+    return res;
+}
+

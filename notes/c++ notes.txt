@@ -1,0 +1,298 @@
+Tutorials/Resources:
+
+Function Pointers - http://www.newty.de/fpt/fpt.html
+
+General:
+* references and constants must be initialized and cannot be assigned to
+
+Class Scoped Function Calls:
+To call a function without having a class to it. This requires the call to be static? (TODO)
+eg. this is a function call to a static function defined in ControlHeadBridgeControlClass:
+ ControlHeadBridgeControl::remoteDeviceCreateBridgeCheck(from_device_id, pui_id, cable_state);
+
+Access Modifiers:
+Can inherit classes with access modifiers.
+
+1. public
+  can be accessed by any other code in the same assembly or another assembly
+  that references it
+
+2. private
+  can be accessed by code in the same class or struct
+
+3. protected
+  can be accessed by code in the same class or struct, or in a derived class 
+
+For Inheritance:
+1. public
+  all members from base class are inherited as there are specified in the base class
+
+2. private
+  all members from base class are inherited as private. Private members stay private
+    and protected and public members become private. This does not affect the way the 
+    derived class accesses members inherited from its parent. It only affects the code
+    trying to access those members through the derived class. 
+
+3. protected
+  public and private members become protected, and private members stay private.
+  
+Input/Output:
+1. cin
+2. cout
+3. cerr
+4. clog
+
+  Out:
+    cout << "string \n";
+
+  In:
+    int age;
+    cin >> age;
+
+Forward Declaration:
+Use if only a pointer is needed to a class.
+If pointer is dereferenced in the file, must use header.
+Avoids unnecssary parsing of header files during compilation.
+
+Tells the compiler that the type exists, but compiler does not know size,
+members, or methods. 
+Considered an incomplete type. 
+Cannot use the type to declare a member, or a base class, since the compiler
+would need to know the layout of the type. 
+
+http://stackoverflow.com/questions/553682/when-can-i-use-a-forward-declaration
+
+
+Friend Class: 
+can access the private and protected members of the class in which it is declared
+  as a friend
+1.  friendships are not symmetric.
+2.  friendships are not transitive.
+3.  friendships are not inherited.
+4.  access due to friendship is inherited.
+
+Key Words
+  Static:
+    static class: non-extant in C++
+
+    static member data and functions exist not in the object but in the scope
+    of the class. Therefore, they can be called without having an object of
+    that class.
+
+    static member data: shared between all instances of a class
+     *no storage space set aside for static members as a result of instantiating
+      a class object. The static member data must be defined outside
+      instantiation of a class object. 
+
+    static member function: can be called without needing an object of class.
+
+    static variables in functions: to keep persistent variable within scope 
+    of a function.
+
+  Const:
+    use for variables that cannot be changed
+    use in function definition to say that the function will not modify
+      any variables in function body
+
+  Volatile:
+    volatile may have no effect on a field if the volatile field exceeds
+      the max size that can be copied on the current architecture by 
+      using one instruction
+
+  Overriding Functions:
+    When a derived class creates a member function with the same return type
+      and signature as a member function in the base class, but with a new
+      implementation.
+
+  Virtual:
+    without "virtual" you "early binding". which implementation of the 
+      method is used gets decided at compile time based on the type of the
+      pointer that you call through.
+
+    with "virtual" you get "late binding". which implementation of the method 
+      is used gets decided at run time based in the type of the pointed-to 
+      object - what is was originally constructed as. 
+
+    To implement virtual functions, C++ uses a special form of late binding
+      known as the virtual table. The virtual table is a lookup table of
+      functions used to resolve function calls in a dynamic/late binding 
+      manner. Every class that uses virtual functions or is derived from a
+      class that uses virtual functions is given it's own virtual table. It's
+      simply a static array that the compiler sets up at compile time.  
+
+
+  Binding: refers to the process that is used to convert identifiers (variables
+    and function names) into machine language addresses. 
+  
+  Early Binding: also called static. the precise function's address is known at
+    compilation. what a standard function uses.
+
+  Late Binding: also called dynamic. the function's address is not known until
+    runtime. function pointers are considered late binding.
+
+
+  Signature:
+    of a function is its name, as wella s the number and type of its parameters.
+    the signature does not include the return type.
+
+  *Passing pointers to array elements. An array is often passed to a function as 
+    a pointer to an element. They lose their size, so that the receiving function
+    cannot directly tell how many elements are pointed to.
+
+
+Nested Classes: 
+  class which is declared in another enclosing class. the members of an
+  enclosing class have no special access to members of a nested class. the 
+  usual access rules are obeyed. 
+
+
+  c++03 Standard 11.8:
+  except by using explicit pointers, references, and object names... declarations
+  in a nested class shall not use non-static data members or non-static member 
+  functions from the enclosing class
+
+  c++11 Standard 11.7:
+  a nested class is a member and as such has the same access rights (to enclosing
+  class) as any other member. the nested class can access private variables.
+
+////////////////////////////////
+  References:
+    1.  a reference is a name constant for an address. you need to initialize the 
+        reference during declaration. once a reference is established to a variable,
+        you cannot change the reference to reference another variable. 
+          int & iRef; // error
+
+    2. no special syntax is needed for derefercing or referencing.
+
+    3. in the general case, compilers usually implement references as pointers. 
+       but they generally have more information about what a reference may 
+       point to, and use that for optimization. 
+
+    4. int i = 5;
+       int & j = i; 
+       everywhere the reference j is encountered, it is replaced with 
+       the address of i. the reference content address is resolved at compile time
+       and there is no need to dereference it like a ptr at run time.  
+
+
+A pointer can be re-assigned any number of times while a reference can not be re-seated after binding.
+Pointers can point nowhere (NULL), whereas reference always refer to an object.
+You can't take the address of a reference like you can with pointers.
+There's no "reference arithmetics" (but you can take the address of an object pointed by a reference and do pointer arithmetics on it as in &obj + 5).
+To clarify a misconception:
+
+The C++ standard is very careful to avoid dictating how a compiler must implement references, but every C++ compiler implements references as pointers. That is, a declaration such as:
+
+int &ri = i;
+if it's not optimized away entirely, allocates the same amount of storage as a pointer, and places the address of i into that storage.
+So, a pointer and a reference both occupy the same amount of memory.
+
+As a general rule,
+
+Use references in function parameters and return types to define useful and self-documenting interfaces.
+Use pointers to implement algorithms and data structures.
+
+////////////////////////////////
+
+    *** SYNTAX ***
+foo *array[10];   // array of 10 foo pointers
+foo (*array)[10]; // pointer to array of 10 foos
+
+
+This is an array of 8 pointers to pointers to VirtualDevice:
+
+  VirtualDevice ***m_pVirtualDeviceTable;
+  m_pVirtualDeviceTable = new VirtualDevice **[DM_MAX_DEVICES];
+
+
+
+QUESTIONS:
+1. What is the lifetime of a static variable in side a function that is a member of a class?
+
+////////////////////////////////
+
+You need a virtual desctructor whenever you want to destroy a child object through a pointer to
+a base class.
+
+////////////////////////////////
+
+Making Base Class Destructors Virtual
+
+Here is the problem scenario:
+
+class Base
+{
+  // note that there is no virtual destructor, just default normal destructor
+};
+
+class Derived : public Base
+{
+  ~Derived()
+  {
+    // Do some important cleanup
+  }
+}
+
+Base *b = new Derived();
+// do some stuff with b
+delete b;     // This is a problem
+
+Explanation: The call to the desctructor will be resolved like any non-virtual code.
+             The destructor of the base class will be called but not the one of the
+             derived class. This results in resource leakage.
+
+////////////////////////////////
+
+Why make destructors private or protected?
+
+If the base class destructor is private or protected, delete cannot be called through a base-class pointer. 
+
+It is used to allow any other polymorphic use of derived classes via pointers to base, but not allow
+the user to delete using such a pointer.
+
+If an object will not be deleted via a pointer to its base, then the destructor should be declared
+with protected or private access. This will result in a compile error should an attempt be made to
+delete the object incorrectly.
+
+Use public virtual destructor if you need polymorphic deletion, if not then destructor does not
+need to be virtual at all.
+
+A base class destructor should be either public/virtual, or protected/non-virtual.
+This leaves you with two situations:
+1.  You want to allow polymorphic deletion through a base ptr, in which case the destructor
+    must be virtual and public.
+2.  You don't, in which case the destructor should be non-virtual and protected, the latter
+    to prevent unwanted usage. 
+
+Constructors can be declared private to prevent their creation on the stack. You would also need a 
+static class member method that calls new on the class and returns a pointer to it.
+
+A classes new operator can be declared as private to prevent new from being used to instantiate it.
+
+
+
+////////////////////////////////
+
+Object files (produced from compiler) only need function declarations, not definitions. The linker 
+requires definitions to resolve symbols for creation of an executable. 
+
+Does the linker need definitions when creating a library? 
+
+///////////////////////////////
+References vs Pointers
+
+Pointer Declaration:
+int i = 3;
+int *pi = &i;
+*pi = 4;   // change i to 4
+
+Reference Declaration:
+int i = 3;
+int &ri = i;
+ri = 4;   // change i to 4
+
+
+> Must use * operator to dereference ptr, but no operator to dereference a reference
+>
+
+

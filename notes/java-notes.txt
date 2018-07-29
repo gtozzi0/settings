@@ -1,0 +1,105 @@
+* Everything is passed by value in Java
+* Object references and primitives are passed by value
+  * The thing is, there is no way to derefernce references in Java other than x.y (which is like x->y in C)
+
+--- Anonymous Inner Class (Non-Static Nested Class) ---
+* has access to all of the members of the outer class, including private
+* this supports polymorphism
+* has no name, jump straight to creating an instance of the class
+* quicker to create anon class rather than create a new separate class, anonymous inner classes
+  useful when you need to override a small amount of functionality in a superclass 
+
+____________________________________
+class ProgrammerInterview  {
+ public void read() {
+  System.out.println("Programmer Interview!");
+ }
+}
+
+class Website {
+/*  This creates an anonymous inner class: */
+ProgrammerInterview pInstance = new ProgrammerInterview() {
+  public void read() {
+   System.out.println("anonymous ProgrammerInterview");
+  }
+ };
+}
+____________________________________
+
+* usually, this is how a class would implement an interface:
+____________________________________
+  /*code to implement the ProgrammerInterview interface:*/
+  class SomeClass implements ProgrammerInterview //...
+____________________________________
+
+* but syntax is unique for the anonymous case, where we don't use "implements" keyword
+* example of anonymouse inner class implementing an interface:
+
+____________________________________
+interface ProgrammerInterview  {
+  public void read();
+}
+
+class Website  {
+  /* no use of implements keyword, but we are still creating instance of interface class */
+  ProgrammerInterview p = new ProgrammerInterview () {
+    public void read() {
+      System.out.println("interface ProgrammerInterview 
+      anonymous class implementer");
+    }
+  };
+}
+____________________________________
+
+--- Static Nested Classes ---
+* doesn't have access to members of super class
+* can be initialized independent of super class
+
+* instantiating a static nested class from non-enclosing class:
+
+____________________________________
+class EnclosingClass {
+  static class Nested {
+    void someMethod() { System.out.println("hello"); }
+  }
+}
+
+class NonEnclosingClass {
+
+  public static void main(String[] args) {
+  /*instantiate the Nested class that is a static
+    member of the EnclosingClass class:
+  */
+
+  EnclosingClass.Nested n = new EnclosingClass.Nested(); 
+
+  n.someMethod();  //prints out "hello"
+  }
+}
+____________________________________
+
+* instantiating a static nested class from enclosing class:
+
+____________________________________
+class EnclosingClass {
+
+  static class Nested {
+  void anotherMethod() { System.out.println("hi again"); } 
+  }
+
+  public static void main(String[] args) {
+  //access enclosed class:
+
+  Nested n = new Nested(); 
+
+  n.anotherMethod();  //prints out "hi again"
+  }
+
+}
+____________________________________
+
+Keywords:
+super:
+* used to invoke parent class constructor
+* used to invoke parent class method/member that has been overidden in the sub class (ie super.method())
+

@@ -1,0 +1,12 @@
+
+$(pathsubst pattern,replacement,text)
+-finds whitespace-separated words in text that match pattern and replaces them with replacement
+
+
+NONHLOS_DIR := $(patsubst %/,%,$(dir $(realpath $(lastword $(MAKEFILE_LIST)))))
+1. MAKEFILE_LIST is a list of makefiles to be processed, with the current being the last in the list
+2. lastword returns the last makefile name in the MAKEFILE_LIST
+3. realpath returns the absolute path of the makefile
+4. dir returns the directory path of makefile (not including the actual makefile)
+5. patsubst %/,%, gets rid of the trailing '/' from the directory path
+

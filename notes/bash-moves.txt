@@ -1,0 +1,24 @@
+* Use tee to send output to file:
+
+    command | tee ~/outputfile.txt
+
+* Catch stderr as well:
+
+    command 2>&1 | tee ~/outputfile.txt
+
+* A variation:
+
+    command |& tee ~/outputfile.txt
+
+* tee is useful for capturing command output while also viewing live
+
+
+* Send error to file:
+
+    command 2> output.txt
+
+* Send standard and error to file:
+
+    command &> output.txt
+
+

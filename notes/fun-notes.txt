@@ -1,0 +1,15 @@
+Clare Controls I2C Protocol 
+Master
+    * Master is on bus with 4 other slave controllers
+    * Master sends beacon message to all slaves
+    * Slave responds with UID (based off die placement)
+    * Master writes back UID backwards as handshake with slave
+    * If Slave acknowledges, Master stores UID into table 
+
+    * Bus collisions negate a transaction, beaconing continues
+    * Bus "collisions" will taint the Slave UID. Slave detects bad UID and
+      negates the handshake transaction
+Slave
+    * All slaves initialize into a routine where they randomly toggle between
+      delaying and "searching" for beacon (enabling I2C basically). This reduces
+      the amount of I2C bus collisions
