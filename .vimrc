@@ -1,6 +1,3 @@
-"source $VIMRUNTIME/mswin.vim
-"behave mswin
-
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
@@ -48,6 +45,7 @@ Plugin 'majutsushi/tagbar'
 Plugin 'wesQ3/vim-windowswap'
 Plugin 'godlygeek/tabular'
 Plugin 'rking/ag.vim'
+Plugin 'universal-ctags/ctags'
 "Plugin 'vim-scripts/cscope.vim'
 "Plugin 'simplyzhao/cscope_maps.vim'
 
@@ -101,7 +99,8 @@ set incsearch                           " find as you type search
 set hlsearch                            " highlight search terms
 set sm                                  " automatic matching braces
 set title                               " show title in terminal
-highlight Search gui=bold term=bold cterm=bold guibg=black guifg=yellow
+" gui refers to gvim, cterm refers to terminal
+highlight Search gui=bold term=bold cterm=bold guibg=black guifg=yellow ctermfg=white ctermbg=black
 set visualbell                          "disable beeps and window flash
 set noerrorbells
 autocmd GUIEnter * set visualbell t_vb=
@@ -113,6 +112,10 @@ set listchars=tab:>.,trail:.,extends:\#,nbsp:. " Highlight problematic whitespac
 
 " disable auto-commenting
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
+
+" split reverse open
+set splitbelow
+set splitright
 
 "change the current working dir whenever open file, switch buffers, delete buffer or open/close a window:
 set autochdir
@@ -129,7 +132,7 @@ let g:miniBufExplorerAutoStart = 0  "no auto-start
 "let g:miniBufExplBRSplit = 1   "Put new window below current or on the right for vertical split
 
 " ctrl-p
-let g:ctrlp_max_files = 100000
+let g:ctrlp_max_files = 500000
 
 " map '\' to enter ':Ag'
 nnoremap \ :Ag<SPACE>
@@ -153,13 +156,13 @@ nnoremap \ :Ag<SPACE>
 "cmap, cnoremap, cunmap          Command-line mode
 "omap, onoremap, ounmap          Operator pending mode
 
-nmap <c-k0> :NERDTreeFind<CR>
-nmap <c-k1> :CtrlP<CR>
-nmap <c-k2> :CtrlPBuffer<CR>
-nmap <c-k3> :CtrlPTag<CR>
-nmap <c-k4> :MBEToggle<CR>
-nmap <c-k5> :NERDTreeToggle<CR>
-nmap <c-k6> :TagbarToggle<CR>
+"nmap <c-r> :NERDTreeFind<CR>
+"nmap <c-y> :CtrlPBuffer<CR>
+"nmap <c-u> :CtrlPTag<CR>
+"nmap <c-p> :TagbarToggle<CR>
+nmap <c-i> :MBEToggle<CR>
+nmap <c-o> :NERDTreeToggle<CR>
+nmap <c-p> :CtrlP<CR>
 "nmap <C-k7> :e buffer 
 " hold down Ctrl and hjkl
 nnoremap <c-h> <c-w>h
@@ -168,18 +171,17 @@ nnoremap <c-k> <c-w>k
 nnoremap <c-l> <c-w>l
 
 " window resizing
-nmap <c-Up> <c-w>10+
-nmap <c-Down> <c-w>10_
-nmap <c-Right> <c-w>10>
-nmap <c-Left> <c-w>10<
-nmap <c-m> <c-w>_         " max current window horizontally
-nmap <c-n> <c-w>|         " max current window vertically
+nmap <s-k> <c-w>10+
+nmap <s-j> <c-w>10-
+nmap <s-l> <c-w>10>
+nmap <s-h> <c-w>10<
+nmap <s-m> <c-w>_         " max current window horizontally
+nmap <s-n> <c-w>|         " max current window vertically
 
 nmap <c-s> :%s/
-nnoremap <c-\> <c-]>
-nnoremap <c-]> <c-t>
-nmap <c-u> <c-r>
-nmap <c-u> <c-r>
+nmap <c-u> <c-r>          " remap redo. undo = u, redo = U
+"nnoremap <c-\> <c-]>
+"nnoremap <c-]> <c-t>
 
 nmap <leader>s :%SaveSession
 nmap <leader>o :%OpenSession
@@ -193,36 +195,12 @@ if has('win32') || has('win64')
 "    "For Windows, ctags file is in an expected location
 "    set tags=C:\tools\vim_scripts\tags
 else
-    set tags+=./tags,tags;
-    set tags+=/home/vagrant/Android/Sdk/sources/android-23/tags
+    " look for tags file in the directory of current file,
+    " then upward (the ';' character) until $HOME
+    set tags+=./tags;$HOME
+    "set tags+=~/tools/testing
+    "set tags+=./tags,tags;
 "   a ; after directory provides a stop point for vim to keep looking for tags
 "    "For Linux, traverse up the directory to find the ctags file
 "    set tags=tags;
 end
-
-
-" this can be removed eventually
-set diffexpr=MyDiff()
-function MyDiff()
-  let opt = '-a --binary '
-  if &diffopt =~ 'icase' | let opt = opt . '-i ' | endif
-  if &diffopt =~ 'iwhite' | let opt = opt . '-b ' | endif
-  let arg1 = v:fname_in
-  if arg1 =~ ' ' | let arg1 = '"' . arg1 . '"' | endif
-  let arg2 = v:fname_new
-  if arg2 =~ ' ' | let arg2 = '"' . arg2 . '"' | endif
-  let arg3 = v:fname_out
-  if arg3 =~ ' ' | let arg3 = '"' . arg3 . '"' | endif
-  let eq = ''
-  if $VIMRUNTIME =~ ' '
-    if &sh =~ '\<cmd'
-      let cmd = '""' . $VIMRUNTIME . '\diff"'
-      let eq = '"'
-    else
-      let cmd = substitute($VIMRUNTIME, ' ', '" ', '') . '\diff"'
-    endif
-  else
-    let cmd = $VIMRUNTIME . '\diff'
-  endif
-  silent execute '!' . cmd . ' ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3 . eq
-endfunction
