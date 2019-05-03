@@ -1,7 +1,22 @@
+--- General ---
+* to setup the correct tab spacing for a file:
+    set shiftwidth=2 tabstop=2 softtabstop=2
+
+* add to .bashrc:
+    set -o vi
+
+* add to .inputrc
+    set editing-mode vi
+    set keymap vi (or set keymap vi-command)
+    https://vim.fandom.com/wiki/Use_vi_shortcuts_in_terminal
+
+--- VIM ---
 :sp  - horizontal split
 :vsp - vertical split
 
---- VIM ---
+C-w + t, C-w K  - change two vertically split windows to horizontally split
+C-w + t, C-w H  - horizontally to vertically
+
 "*y             - copy to selection buffer (eg: middle clicking on mouse)
 Shift+Insert    - paste selection to tmux pane
 
@@ -71,6 +86,7 @@ prefix + Ctrl-r - restore
 
 Ctrl+Q            : renable flow control (if accidentally press Ctrl+S, freezes vim)
 
+prefix + '          : goto window name
 prefix + ,          : rename window
 prefix + c          : create new window
 prefix + p/n        : switch to previous/next window
