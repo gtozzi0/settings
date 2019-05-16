@@ -171,12 +171,13 @@ nnoremap <c-k> <c-w>k
 nnoremap <c-l> <c-w>l
 
 " window resizing
-nmap <s-k> <c-w>10+
-nmap <s-j> <c-w>10-
-nmap <s-l> <c-w>10>
-nmap <s-h> <c-w>10<
-nmap <s-m> <c-w>_         " max current window horizontally
-nmap <s-n> <c-w>|         " max current window vertically
+nmap <s-k> <c-w>+
+nmap <s-j> <c-w>-
+nmap <s-l> <c-w>5>
+nmap <s-h> <c-w>5<
+"nmap <s-m> <c-w>_         " max current window horizontally
+" this is bad, stops s-n working for search
+"nmap <s-n> <c-w>|         " max current window vertically
 
 nmap <c-s> :%s/
 nmap <c-u> <c-r>          " remap redo. undo = u, redo = U
@@ -204,3 +205,13 @@ else
 "    "For Linux, traverse up the directory to find the ctags file
 "    set tags=tags;
 end
+
+" clean up white space and save cursor position
+fun! <SID>StripTrailingWhitespaces()
+    let l = line(".")
+    let c = col(".")
+    %s/\s\+$//e
+    call cursor(l, c)
+endfun
+
+autocmd FileType c,cpp,java,python autocmd BufWritePre <buffer> :call <SID>StripTrailingWhitespaces()
