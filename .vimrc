@@ -83,9 +83,9 @@ set number                      " show line number
 set backspace=indent,eol,start  " backspace settings
 set backspace=2                 " allow backspacing over indent, eol, and start of an insert
 set expandtab
-set tabstop=4                   " an indentation every 4 columns
-set softtabstop=4               " let backspace delete indent
-set shiftwidth=4                " use indent of 4 spaces
+set tabstop=2                   " an indentation every 4 columns
+set softtabstop=2               " let backspace delete indent
+set shiftwidth=2                " use indent of 4 spaces
 "set lines=90 columns=170
 "set textwidth=80              " set the textwidth to be 80 chars
 "syntax enable
@@ -143,6 +143,13 @@ nnoremap \ :Ag<SPACE>
 "nnoremap K :grep! "\b<C-R><C-W>\b"<CR>:cw<CR>
 "nnoremap K :exe 'Ag!' expand('<cword>')<cr>
 
+"""""""""""""""""Taglist settings"""""""""""""""""
+" https://www.programering.com/a/MDMyQTNwATA.html
+let Tlist_Auto_Open = 1
+let Tlist_Ctags_Cmd = '~/tools/ctags/ctags'
+let Tlist_Show_One_File = 1
+let Tlist_Exit_OnlyWindow = 1
+
 "-----------------------------------------------------------------------------
 " key mappings
 "-----------------------------------------------------------------------------
@@ -163,6 +170,7 @@ nnoremap \ :Ag<SPACE>
 nmap <c-i> :MBEToggle<CR>
 nmap <c-o> :NERDTreeToggle<CR>
 nmap <c-p> :CtrlP<CR>
+nmap <c-m> :TlistToggle<CR>
 "nmap <C-k7> :e buffer 
 " hold down Ctrl and hjkl
 nnoremap <c-h> <c-w>h
