@@ -134,9 +134,6 @@ let g:miniBufExplorerAutoStart = 0  "no auto-start
 " ctrl-p
 let g:ctrlp_max_files = 500000
 
-" map '\' to enter ':Ag'
-nnoremap \ :Ag<SPACE>
-
 " https://robots.thoughtbot.com/faster-grepping-in-vim
 
 " bind K to grep word under cursor
@@ -167,10 +164,20 @@ let Tlist_Exit_OnlyWindow = 1
 "nmap <c-y> :CtrlPBuffer<CR>
 "nmap <c-u> :CtrlPTag<CR>
 "nmap <c-p> :TagbarToggle<CR>
-nmap <c-i> :MBEToggle<CR>
-nmap <c-o> :NERDTreeToggle<CR>
-nmap <c-p> :CtrlP<CR>
-nmap <c-m> :TlistToggle<CR>
+
+" https://vim.fandom.com/wiki/Keep_your_cursor_centered_vertically_on_the_screen
+" z<CR> or zt - puts current line to top of screen
+" zz          - puts line to center of screen
+" zb          - puts current line to bottom of screen
+
+" map leader zz to toggle scroll on/off
+:nnoremap <Leader>zz :let &scrolloff=999-&scrolloff<CR>
+" sudo apt install silversearcher-ag
+nnoremap <Leader>a :Ag<SPACE>
+nnoremap <Leader>u :TlistToggle<CR>
+nnoremap <Leader>i :MBEToggle<CR>
+nnoremap <Leader>o :NERDTreeToggle<CR>
+nnoremap <Leader>p :CtrlP<CR>
 "nmap <C-k7> :e buffer 
 " hold down Ctrl and hjkl
 nnoremap <c-h> <c-w>h
