@@ -1,0 +1,67 @@
+let SessionLoad = 1
+if &cp | set nocp | endif
+let s:so_save = &so | let s:siso_save = &siso | set so=0 siso=0
+let v:this_session=expand("<sfile>:p")
+silent only
+cd ~/ml19/leapcore/wearable_core/common/leon/peripherals/status_led
+if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
+  let s:wipebuf = bufnr('%')
+endif
+set shortmess=aoO
+badd +10 ~/.wine/drive_c/LP5523/Status_LED_Patterns/serdes_flashing.src
+badd +1213 ~/ml19/leapcore/wearable_core/common/leon/peripherals/status_led/lp5523.c
+badd +1 ~/.wine/drive_c/LP5523/object_recognition.src
+badd +30 ~/.wine/drive_c/LP5523/test.src
+badd +1 ~/.wine/drive_c/LP5523/Status_LED_Patterns/vcam_active.src
+badd +1 ~/.wine/drive_c/LP5523/test3.src
+badd +408 ~/ml19/leapcore/wearable_core/common/leon/peripherals/status_led/status_led.c
+badd +157 ~/ml19/leapcore/wearable_core/common/leon/peripherals/status_led/lp5523.h
+badd +18 ~/ml19/leapcore/wearable_core/common/leon/peripherals/status_led/status_led.h
+badd +1055 ~/ml19/nova/frameworks/services/audioservice/capture/capture_device.cc
+badd +560 ~/ml19/leapcore/wearable_host_shared/usb_hostlib/llminotaur/llminotaur.c
+badd +59 ~/ml19/leapcore/wearable_core/common/leon/comm/llcomm.c
+badd +46 ~/ml19/leapcore/wearable_core/hwplats/ma2480/leon/peripherals/camera/vcam.c
+badd +177 ~/ml19/leapcore/wearable_core/hwplats/ma2480/leon/peripherals/camera/vcam_sm.c
+badd +1 ~/.wine/drive_c/LP5523/object_recognition_old.src
+badd +28 ~/ml19/leapcore/wearable_host_shared/usb_hostlib/shared/shared_llminotaur.h
+badd +1668 ~/ml19/leapcore/wearable_host_shared/usb_hostlib/usbariadne/usbariadne.c
+badd +255 ~/ml19/leapcore/wearable_host_shared/usb_hostlib/llminotaur/llminotaur.h
+badd +57 ~/ml19/leapcore/wearable_core/common/leon/comm/llcomm.h
+badd +77 ~/ml19/leapcore/wearable_host_shared/usb_hostlib/llminotaur/llmtest/llmtest.cpp
+badd +55 ~/ml19/leapcore/wearable_host_shared/usb_hostlib/usbariadne/usbariadne.h
+argglobal
+silent! argdel *
+edit ~/ml19/leapcore/wearable_core/common/leon/peripherals/status_led/status_led.c
+set splitbelow splitright
+wincmd t
+set winheight=1 winwidth=1
+argglobal
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let s:l = 445 - ((51 * winheight(0) + 28) / 57)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+445
+normal! 06|
+tabnext 1
+if exists('s:wipebuf')
+  silent exe 'bwipe ' . s:wipebuf
+endif
+unlet! s:wipebuf
+set winheight=1 winwidth=1 shortmess=filnxtToOI
+let s:sx = expand("<sfile>:p:r")."x.vim"
+if file_readable(s:sx)
+  exe "source " . fnameescape(s:sx)
+endif
+let &so = s:so_save | let &siso = s:siso_save
+doautoall SessionLoadPost
+unlet SessionLoad
+" vim: set ft=vim :

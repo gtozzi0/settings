@@ -1,0 +1,56 @@
+let SessionLoad = 1
+if &cp | set nocp | endif
+let s:so_save = &so | let s:siso_save = &siso | set so=0 siso=0
+let v:this_session=expand("<sfile>:p")
+silent only
+cd ~/ml19/leapcore/wearable_core/hwplats/ma2480/leon/peripherals/camera
+if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
+  let s:wipebuf = bufnr('%')
+endif
+set shortmess=aoO
+badd +250 ~/ml19/leapcore/wearable_core/hwplats/ma2480/leon/peripherals/camera/dsense_interface_utils.c
+badd +547 ~/ml19/leapcore/wearable_core/common/leon/shell/shell_dsense_handlers.c
+badd +864 ~/ml19/leapcore/wearable_core/hwplats/ma2480/leon/peripherals/camera/dsense_config.c
+badd +358 ~/ml19/nova/factory/fcmd/server/handlers/platform/wearable/fc_platform_dsense.cpp
+badd +820 ~/ml19/leapcore/wearable_core/hwplats/ma2480/leon/peripherals/camera/dsense_utils.c
+badd +254 ~/ml19/leapcore/wearable_core/hwplats/ma2480/leon/peripherals/camera/dsense_settings.c
+badd +1 ~/ml19/leapcore/wearable_core/hwplats/ma2480/leon/peripherals/camera/dsense.c
+badd +1 ~/ml19/leapcore/wearable_core/hwplats/ma2480/leon/peripherals/camera/dsense_sm.c
+badd +1 ~/ml19/leapcore/wearable_core/common/leon/health/health_mldoc.c
+argglobal
+silent! argdel *
+argadd dsense_interface_utils.c
+edit ~/ml19/leapcore/wearable_core/hwplats/ma2480/leon/peripherals/camera/dsense_config.c
+set splitbelow splitright
+wincmd t
+set winheight=1 winwidth=1
+argglobal
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let s:l = 845 - ((7 * winheight(0) + 27) / 55)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+845
+normal! 049|
+tabnext 1
+if exists('s:wipebuf')
+  silent exe 'bwipe ' . s:wipebuf
+endif
+unlet! s:wipebuf
+set winheight=1 winwidth=1 shortmess=filnxtToOI
+let s:sx = expand("<sfile>:p:r")."x.vim"
+if file_readable(s:sx)
+  exe "source " . fnameescape(s:sx)
+endif
+let &so = s:so_save | let &siso = s:siso_save
+doautoall SessionLoadPost
+unlet SessionLoad
+" vim: set ft=vim :
