@@ -2,7 +2,12 @@
  NOTES
 -----------------------------------------------------------------------------
 easymotion: <leader><leader>w
-tcomment  : highlight line + 'gc'
+nerdcommenter:
+comment out current line or selected text: <leader>cc
+comment out selected text with block     : <leader>cs
+uncomments selected lines                : <leader>cu
+comment out current lines but yank first : <leader>cy
+toggle comments on selected lines        : <leader>c<space>
 
 :setlocal foldmethod=syntax
 create fold: zf {motion}
