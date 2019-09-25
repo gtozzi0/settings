@@ -46,6 +46,10 @@ Plugin 'wesQ3/vim-windowswap'
 Plugin 'godlygeek/tabular'
 Plugin 'rking/ag.vim'
 Plugin 'universal-ctags/ctags'
+Plugin 'junegunn/goyo.vim'
+Plugin 'tomtom/tcomment_vim'
+Plugin 'easymotion/vim-easymotion'
+Plugin 'nathanaelkane/vim-indent-guides'
 "Plugin 'vim-scripts/cscope.vim'
 "Plugin 'simplyzhao/cscope_maps.vim'
 
@@ -97,6 +101,7 @@ set wildignore=*.o,*.obj,*~,*.swp,*.pyc " files to ignore on auto complete
 set showcmd                             " show commands
 set incsearch                           " find as you type search
 set hlsearch                            " highlight search terms
+set smartcase                           " auto switch to case-sensitive
 set sm                                  " automatic matching braces
 set title                               " show title in terminal
 " gui refers to gvim, cterm refers to terminal
@@ -194,15 +199,12 @@ nmap <s-h> <c-w>5<
 " this is bad, stops s-n working for search
 "nmap <s-n> <c-w>|         " max current window vertically
 
-nmap <c-s> :%s/
 nmap <c-u> <c-r>          " remap redo. undo = u, redo = U
 "nnoremap <c-\> <c-]>
 "nnoremap <c-]> <c-t>
 
-nmap <leader>s :%SaveSession
-nmap <leader>o :%OpenSession
-
 nnoremap <F1> :set hlsearch!<CR>
+
 "-----------------------------------------------------------------------------
 " ctags location
 "-----------------------------------------------------------------------------

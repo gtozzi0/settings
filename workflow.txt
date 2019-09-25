@@ -1,3 +1,25 @@
+-----------------------------------------------------------------------------
+ NOTES
+-----------------------------------------------------------------------------
+easymotion: <leader><leader>w
+tcomment  : highlight line + 'gc'
+
+:setlocal foldmethod=syntax
+create fold: zf {motion}
+open   fold: zo
+delete fold: zd
+
+set foldmethod=indent   
+set foldnestmax=10
+set nofoldenable
+set foldlevel=2
+
+* AG
+use ag         : <leader> a
+open in new tab: t
+open in horiz  : h
+open in vert   : v
+
 --- General ---
 * to setup the correct tab spacing for a file:
     set shiftwidth=2 tabstop=2 softtabstop=2
@@ -11,6 +33,10 @@
     https://vim.fandom.com/wiki/Use_vi_shortcuts_in_terminal
 
 --- VIM ---
+copy to system clipboard in Vim: "+y
+copy to selection clipboard in Vim: "*y
+paste selection to tmux: shift + insert
+
 :sp  - horizontal split
 :vsp - vertical split
 
@@ -22,6 +48,20 @@ Shift+Insert    - paste selection to tmux pane
 
 "+y             - copy to clipboard buffer
 Ctrl+Shift+v    - paste selection anywhere
+
+access register x   : "r
+yank text to reg x  : "xy
+paste contents of x : "xp 
+
+in insert/command mode : <Ctrl-r> + x
+to see contents of regs: ":reg" or to filer: ":reg a b c"
+
+registers 0-9 are autopopulated when text deleted
+
+read only registers:
+last inserted text: ".
+current file path : "%
+most recent cmd   : ":
 
 --- NERDTREE ---
 
@@ -65,6 +105,23 @@ d - delete selected buffer
 <c-tab> - bypasses tab completion for a real tab insertion
 
 --- TMUX ---
+
+-----
+That's the referenced text if anyone's looking:
+
+I want to make a restore to a previous point in time, but it seems that save is now overwritten?
+
+None of the previous saves are deleted (unless you explicitly do that). All save files are kept in ~/.tmux/resurrect/ directory.
+Here are the steps to restore to a previous point in time:
+
+make sure you start this with a "fresh" tmux instance
+$ cd ~/.tmux/resurrect/
+locate the save file you'd like to use for restore (file names have a timestamp)0
+symlink the last file to the desired save file: $ ln -sf <file_name> last
+do a restore with tmux-resurrect key: prefix + Ctrl-r
+-----
+
+
 C-b             : default prefix
 
 C-b %           : split vertical
@@ -86,11 +143,14 @@ prefix + Ctrl-r - restore
 
 Ctrl+Q            : renable flow control (if accidentally press Ctrl+S, freezes vim)
 
+prefix + enter      : change layout
+
 prefix + '          : goto window name
 prefix + ,          : rename window
 prefix + c          : create new window
 prefix + p/n        : switch to previous/next window
 prefix + <number>   : swtich to window <number>
+prefix + &          : kill current window
 
 C-d                 : kill pane
 prefix + d          : detach session
@@ -101,6 +161,7 @@ tmux attach -t <session>        : attach to session
 tmux new -s <name>              : create new session with <name>
 tmux rename-session -t 0 <name> : rename session 0 to <name>
 
+:swap-window -s 3 -t 2           : swaps windows 2 and 3
 
 --- vi mode ---
 prefix + [          : enter vi mode (must be done before below commands)
