@@ -1,0 +1,42 @@
+----- Hacker News Threads -----
+* "What's a promising area to work on":
+    https://news.ycombinator.com/item?id=21324768
+
+* "Are there books on mathematics like Feynman's lectures on physics?"
+    https://news.ycombinator.com/item?id=21346272
+
+----- Music -----
+https://www.reddit.com/r/edmproduction/comments/b36dxf/ive_been_producing_for_18_years_heres_what_i/
+
+
+----- Linux -----
+http://newandroidbook.com/tools/jtrace.html
+http://dwise1.net/pgm/sockets/blocking.html
+https://dzone.com/articles/parallel-tcpip-socket-server-with-multi-threading
+
+----- AI -----
+AI Research Paper Analysis: https://blog.acolyer.org/
+http://theory.stanford.edu/~amitp/GameProgramming/Heuristics.html
+https://ml-cheatsheet.readthedocs.io/en/latest/gradient_descent.html
+https://vas3k.com/blog/machine_learning/?ref=hn
+https://greenteapress.com/wp/think-bayes/
+https://github.com/rlabbe/Kalman-and-Bayesian-Filters-in-Python/blob/master/12-Particle-Filters.ipynb
+https://atsushisakai.github.io/PythonRobotics/#slam
+http://mnemstudio.org/path-finding-q-learning-tutorial.htm
+
+----- Programming -----
+http://gameprogrammingpatterns.com/contents.html
+https://www.datacamp.com/community/tutorials/python-list-comprehension
+https://matplotlib.org/tutorials/introductory/pyplot.html
+
+----- Math -----
+https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-042j-mathematics-for-computer-science-fall-2010/readings/
+https://www.khanacademy.org/math/calculus-1
+https://www.khanacademy.org/math/algebra2#sequences-and-series
+
+
+wolfram alpha
+https://superuser.com/questions/112981/how-to-create-a-new-keyboard-shortcut-using-the-windows-key
+
+----- Health -----
+https://fitness.stackexchange.com/questions/28447/back-pain-and-stiffness-if-not-working-out-regularly
