@@ -33,6 +33,9 @@ https://matplotlib.org/tutorials/introductory/pyplot.html
 https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-042j-mathematics-for-computer-science-fall-2010/readings/
 https://www.khanacademy.org/math/calculus-1
 https://www.khanacademy.org/math/algebra2#sequences-and-series
+https://cr.yp.to/papers/calculus.pdf
+http://www.feynmanlectures.caltech.edu/I_22.html
+Calculus for the Practical Man by J.E. Thompson
 
 
 wolfram alpha
