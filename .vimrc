@@ -32,7 +32,6 @@ Plugin 'ascenator/L9', {'name': 'newL9'}
 "Plugin 'file:///home/gmarik/path/to/plugin'
 
 " plugin on GitHub repo:
-Plugin 'tpope/vim-fugitive'
 Plugin 'bling/vim-airline'
 Plugin 'scrooloose/nerdtree'
 Plugin 'ctrlpvim/ctrlp.vim'
@@ -47,9 +46,11 @@ Plugin 'godlygeek/tabular'
 Plugin 'rking/ag.vim'
 Plugin 'universal-ctags/ctags'
 Plugin 'junegunn/goyo.vim'
-Plugin 'tomtom/tcomment_vim'
 Plugin 'easymotion/vim-easymotion'
 Plugin 'nathanaelkane/vim-indent-guides'
+"Plugin 'SirVer/ultisnips'
+"Plugin 'honza/vim-snippets'
+"Plugin 'tpope/vim-fugitive'
 "Plugin 'vim-scripts/cscope.vim'
 "Plugin 'simplyzhao/cscope_maps.vim'
 
@@ -58,14 +59,6 @@ call vundle#end()            " required
 filetype plugin indent on    " required
 " To ignore plugin indent changes, instead use:
 "filetype plugin on
-"
-" Brief help
-" :PluginList       - lists configured plugins
-" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
-" :PluginSearch foo - searches for foo; append `!` to refresh local cache
-" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
-"
-" see :h vundle for more details or wiki for FAQ
 " Put your non-Plugin stuff after this line
 
 "set guifont=*      " opens up font menu
@@ -87,12 +80,13 @@ set number                      " show line number
 set backspace=indent,eol,start  " backspace settings
 set backspace=2                 " allow backspacing over indent, eol, and start of an insert
 set expandtab
-set tabstop=2                   " an indentation every 4 columns
-set softtabstop=2               " let backspace delete indent
-set shiftwidth=2                " use indent of 4 spaces
-"set lines=90 columns=170
-"set textwidth=80              " set the textwidth to be 80 chars
-"syntax enable
+set shiftround                  " round indent to multiple of shiftwidth
+set autoindent                  " copy indent from current line, over to the new line
+
+set tabstop=4                   " an indentation every 4 columns
+set softtabstop=4               " let backspace delete indent
+set shiftwidth=4                " use indent of 4 spaces
+"set textwidth=90                " set the textwidth to be 80 chars
 
 set ignorecase                          " case insensitive search
 set wildmenu                            " show list instead of just completing
@@ -178,11 +172,12 @@ let Tlist_Exit_OnlyWindow = 1
 " map leader zz to toggle scroll on/off
 :nnoremap <Leader>zz :let &scrolloff=999-&scrolloff<CR>
 " sudo apt install silversearcher-ag
-nnoremap <Leader>a :Ag<SPACE>
-nnoremap <Leader>u :TlistToggle<CR>
-nnoremap <Leader>i :MBEToggle<CR>
-nnoremap <Leader>o :NERDTreeToggle<CR>
-nnoremap <Leader>p :CtrlP<CR>
+nnoremap <Leader><Leader>q :Ag<SPACE>
+"        <leader><leader>w :easymotion
+nnoremap <Leader><Leader>u :TlistToggle<CR>
+nnoremap <Leader><Leader>i :MBEToggle<CR>
+nnoremap <Leader><Leader>o :NERDTreeToggle<CR>
+nnoremap <Leader><Leader>p :CtrlP<CR>
 "nmap <C-k7> :e buffer 
 " hold down Ctrl and hjkl
 nnoremap <c-h> <c-w>h
@@ -191,10 +186,10 @@ nnoremap <c-k> <c-w>k
 nnoremap <c-l> <c-w>l
 
 " window resizing
-nmap <s-k> <c-w>+
-nmap <s-j> <c-w>-
-nmap <s-l> <c-w>5>
-nmap <s-h> <c-w>5<
+nmap <s-k> <c-w>-
+nmap <s-j> <c-w>+
+nmap <s-l> <c-w>5<
+nmap <s-h> <c-w>5>
 "nmap <s-m> <c-w>_         " max current window horizontally
 " this is bad, stops s-n working for search
 "nmap <s-n> <c-w>|         " max current window vertically
@@ -204,6 +199,18 @@ nmap <c-u> <c-r>          " remap redo. undo = u, redo = U
 "nnoremap <c-]> <c-t>
 
 nnoremap <F1> :set hlsearch!<CR>
+
+" $ yank until end of line in visual mode
+vmap $ g_
+
+" Y yanks to clipboard
+vnoremap Y "+y
+
+" P prints from clipboard
+nnoremap P "+gP
+
+" & yank to end of line in normal mode
+"nnoremap & yg_
 
 "-----------------------------------------------------------------------------
 " ctags location
@@ -231,4 +238,22 @@ fun! <SID>StripTrailingWhitespaces()
     call cursor(l, c)
 endfun
 
-autocmd FileType c,cpp,java,python autocmd BufWritePre <buffer> :call <SID>StripTrailingWhitespaces()
+
+" File type dependent options
+if has("autocmd")
+    " Enable file type detection, plugins, and indentation rules.
+    " filetype plugin indent on
+    " ... other file types set here ...
+
+    autocmd FileType c,cpp,java,python autocmd BufWritePre <buffer> :call <SID>StripTrailingWhitespaces()
+    " Python indent.
+    " autocmd FileType python setl sw=2 ts=2 sts=2 et
+    " autocmd FileType cpp,groovy, java, python setl sw=4 sts=4 et
+    " ... other file types set here ...
+
+    " When editing a file, always jump to the last known cursor position.
+    autocmd BufReadPost *
+        \ if line("'\"") > 0 && line("'\"") <= line("$") |
+        \       execute "normal g`\"" |
+        \ endif
+endif
