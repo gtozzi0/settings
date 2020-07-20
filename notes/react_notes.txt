@@ -1,0 +1,45 @@
+'C:\ProgramData\chocolatey\lib\ag\tools'
+
+* Web Links
+    * https://shift.infinite.red/getting-started-with-react-native-development-on-windows-90d85a72ae65
+    * https://docs.microsoft.com/en-us/windows/android/react-native (didn't use much of this, but still good ref)
+
+* Environment Vars
+    * Had to add these into User and System:
+        * User
+            * ANDROID_HOME - C:\Users\Gino\AppData\Local\Android\Sdk
+            * ANDROID_SDK_ROOT - C:\Users\Gino\AppData\Local\Android\Sdk
+            * JAVA_HOME - C:\Program Files\Android\Android Studio\jre\jre
+        * System
+            * Path
+                * "C:\Users\Gino\AppData\Local\Android\Sdk\tools"
+                * "C:\Users\Gino\AppData\Local\Android\Sdk\tools\bin"
+
+* General Steps
+    1. Install Android Studio
+        * Set up environ vars above
+        * Run an Android Studio sample app on phone by clicking "Play" button
+
+    2. Install Node JS
+
+    3. Install React Native
+        * npm install -g react-native-cli
+
+    4. Create new React Native project
+        * "react-native init AwesomeProject"
+        * "cd AwesomeProject"
+
+    5. Run the default project on Android emulator
+        * "react-native run-android --verbose" (must have emulator set up: AndroidStudio->Tools->AVD Manager)
+
+    ?. Manually start the packager (didn't have to do this)
+        * "react-native start"
+
+* Android Tools
+    * Show available emulators
+        * "emulator -list-avds"
+    * Start emulator
+        * "emulator -avd <avd_name>" or "emulator @<avd_name>"
+
+
+
