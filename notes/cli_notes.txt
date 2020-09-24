@@ -1,0 +1,124 @@
+================================================================================
+VIM
+================================================================================
+
+* Installing latest vim on Linux was a nightmare
+    * http://ubuntuhandbook.org/index.php/2019/12/install-vim-8-2-ubuntu-18-04-16-04-19-10/
+    * excerpt from above:
+        * sudo add-apt-repository ppa:jonathonf/vim
+        * sudo apt update
+        * sudo apt install vim
+        * sudo apt install vim-gtk3
+    * installing from this repo won't give you the Runtime files (eg. syntax.vim)
+        * https://www.vim.org/runtime.php
+        * $VIMRUNTIME should be /usr/share/vim
+
+
+================================================================================
+NODE JS
+================================================================================
+
+Get latest
+    * https://phoenixnap.com/kb/update-node-js-version
+
+================================================================================
+Misc
+================================================================================
+
+curl -u <username> <link_to_download> -o <output_file_name>
+
+ssh gtozzi@<ip> -t tmux a -t <session-name>
+ssh gtozzi@10.14.147.229 -t tmux a -t 0
+"<ctrl> + b + d" to detach tmux session and ssh
+
+VIM Filter:
+    g!/<pattern>/d
+
+delete all non-matching lines in vim file:
+    ":g!/sensor_core/d"
+
+watch -n 0.1 mldb shell "fcmd -w imu get_sample"
+watch -n 0.1 mldb shell "cat /sys/devices/platform/MDA0000:00/vsync_time" > kernel_timestamp_log.txt
+
+Clean up logcat and sort:
+cut -d ' ' -f 10- log.txt (worst option, consecutive spaces are not grouped as one delimiter)
+
+1) prints all but first 5 columns. substr part elimnates leading whitespace
+  awk '{$1=$2=$3=$4=$5=""; print substr($0,6)}' log.txt > log_clean.txt 
+
+2) sorts the log
+  sort log_clean.txt > log_sort.txt
+
+Loops
+
+    * while true; do foo; sleep 2; done
+    * for i in 'seq 2 10'; do ./setup_mtest4.py ml19_wearpack --discover --noflash --dev > out.txt; done
+
+
+================================================================================
+Grep
+================================================================================
+
+mldb logcat | grep -i -E 'irs|pscan'
+
+
+================================================================================
+Git
+================================================================================
+
+git diff-tree --no-commit-id --name-only -r bd61ad98  (show touched files in a commit)
+git commit -c ORIG_HEAD
+
+git stash push -m "msg"
+git stash drop stash@{n}
+git stash branch <branch_name> [<stash>]
+
+git stash -- filename.ext
+git stash push -m "describe changes to filename.ext" filename.ext
+
+
+* Creating a new repo
+    * Create the parent
+    * Once merged, in the local repo:
+        * git fetch origin master
+        * git checkout FETCH_HEAD
+    * Create the new child repo
+
+================================================================================
+Repo
+================================================================================
+
+repo sync -j8 -q -c -j24
+repo sync -q -c -j24 --optimized-fetch --no-tags --force-sync
+
+repo sync -q -c -j8 --optimized-fetch --no-tags
+repo sync -q -c -j 12 --no-tags --optimized-fetch --force-sync
+repo sync -q -c -j 12 --no-tags --optimized-fetch --no-repo-verify
+
+repo forall -vc "git clean -fxd"
+
+
+================================================================================
+Ctags
+================================================================================
+
+ctags -R --fields=+l --languages=python -f ~/ctags/.tags <top level of directory to tag>
+ctags -R --fields=+l --languages=python .
+ctags -R .
+
+================================================================================
+TMUX
+================================================================================
+
+Source tmux config and apply while server running (either one works)
+    * :source-file ~/.tmux.conf
+    * tmux source-file ~/.tmux.conf
+
+================================================================================
+Resources
+================================================================================
+
+https://unix.stackexchange.com/questions/77077/how-do-i-use-pushd-and-popd-commands
+https://itsfoss.com/install-software-from-source-code/
+
+https://romainpellerin.eu/copy-pasting-in-tmux-and-vim.html
