@@ -111,22 +111,6 @@ d - delete selected buffer
 
 --- TMUX ---
 
------
-That's the referenced text if anyone's looking:
-
-I want to make a restore to a previous point in time, but it seems that save is now overwritten?
-
-None of the previous saves are deleted (unless you explicitly do that). All save files are kept in ~/.tmux/resurrect/ directory.
-Here are the steps to restore to a previous point in time:
-
-make sure you start this with a "fresh" tmux instance
-$ cd ~/.tmux/resurrect/
-locate the save file you'd like to use for restore (file names have a timestamp)0
-symlink the last file to the desired save file: $ ln -sf <file_name> last
-do a restore with tmux-resurrect key: prefix + Ctrl-r
------
-
-
 C-b             : default prefix
 
 C-b %           : split vertical

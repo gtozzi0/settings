@@ -55,6 +55,13 @@ Loops
     * for i in 'seq 2 10'; do ./setup_mtest4.py ml19_wearpack --discover --noflash --dev > out.txt; done
 
 
+Send error to file:
+    command 2> output.txt
+
+Send standard and error to file:
+    command &> output.txt
+
+
 ================================================================================
 Grep
 ================================================================================
@@ -122,3 +129,19 @@ https://unix.stackexchange.com/questions/77077/how-do-i-use-pushd-and-popd-comma
 https://itsfoss.com/install-software-from-source-code/
 
 https://romainpellerin.eu/copy-pasting-in-tmux-and-vim.html
+
+
+================================================================================
+Tee
+================================================================================
+* tee is useful for capturing command output while also viewing live
+
+* Use tee to send output to file:
+
+    command | tee ~/outputfile.txt
+
+* Catch stderr as well:
+
+    command 2>&1 | tee ~/outputfile.txt
+
+
