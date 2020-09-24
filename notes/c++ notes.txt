@@ -1,212 +1,363 @@
-Tutorials/Resources:
 
-Function Pointers - http://www.newty.de/fpt/fpt.html
+1. Accelerated C++ by Andrew Koenig & Barbara Moo -- Read and practice example code and exercises from this book first.
 
-General:
-* references and constants must be initialized and cannot be assigned to
+2. Programming: Principles and Practice Using C++ (2nd Edition) by Bjarne Stroustrup -- Chapters 5,6, and 7 are gems in this book. You can in fact use this book in parallel with the Accelerated C++ book and
 
-Class Scoped Function Calls:
-To call a function without having a class to it. This requires the call to be static? (TODO)
-eg. this is a function call to a static function defined in ControlHeadBridgeControlClass:
- ControlHeadBridgeControl::remoteDeviceCreateBridgeCheck(from_device_id, pui_id, cable_state);
+3. (a) The C++ Programming Language (4th Edition) by Bjarne Stroustrup, -- Definite reference book to have.
+3. (b) The C++ Standard Library: A Tutorial and Reference (2nd Edition) by Nicolai M. Josuttis, -- Clear examples and very methodical
+3. (c) C++ Templates: The Complete Guide by David Vandevoorde -- What can I say! This is simply a classic.
 
-Access Modifiers:
-Can inherit classes with access modifiers.
+========== General
+* RAII - Resource Allocation Is Initialization
 
-1. public
-  can be accessed by any other code in the same assembly or another assembly
-  that references it
+* Tutorials/Resources:
+    * Function Pointers - http://www.newty.de/fpt/fpt.html
 
-2. private
-  can be accessed by code in the same class or struct
 
-3. protected
-  can be accessed by code in the same class or struct, or in a derived class 
+========== Templates
+    * provides a way to re-use source code as compared to inheritance and composition which provide a way to re-use object code 
 
-For Inheritance:
-1. public
-  all members from base class are inherited as there are specified in the base class
+    * function templates
+        * write generic functions that can be used with arbitrary types
+        * the library generic algos have been implemented as function templates
 
-2. private
-  all members from base class are inherited as private. Private members stay private
-    and protected and public members become private. This does not affect the way the 
-    derived class accesses members inherited from its parent. It only affects the code
-    trying to access those members through the derived class. 
+    * class templates
+        * containers have been implemented as class templates
 
-3. protected
-  public and private members become protected, and private members stay private.
+
+========== Casting
+* Static Cast
+    * compile time cast
+    * example
+
+        void *v_ptr;
+        int  *i_ptr;
+
+        static_cast<int *>v_ptr;  // cast void pointer to int pointer
+
+
+
+========== Pointers
+* Types
+    * Raw pointers
+
+    * References
+        * references (like constants) must be initialized and cannot be assigned to
+        * once reference is established, cannot change the reference to reference another object
+        * pointers can point to NULL, but references always refer to an object
+        * references is like a read only raw pointer (pointer address can't be changed)
+        * no special syntax is needed for derefercing or referencing
+            * can't take the address of a reference like you can with pointer
+            * no "reference arithmetics"
+
+        * Google Style Guide suggests (may be outdated):
+            * input parameters should be const references
+            * outputs should be pointers
+
+        * Generally it seems this is the order of use:
+            1. Use plain objects and references until you can't
+            2. Use smart pointers until you can't
+            3. Use raw pointers
+
+        * example
+            int i = 5;
+            int & j = i; 
+
+            everywhere the reference j is encountered, it is replaced with 
+            the address of i. the reference content address is resolved at compile time
+            and there is no need to dereference it like a ptr at run time.  
+
+        * References vs Pointers
+            * Pointer Declaration:
+                int i = 3;
+                int *pi = &i;
+                *pi = 4;   // change i to 4
+
+            * Reference Declaration:
+                int i = 3;
+                int &ri = i;
+                ri = 4;   // change i to 4
+
+        * To clarify a misconception:
+            The C++ standard is very careful to avoid dictating how a compiler must implement references,
+            but every C++ compiler implements references as pointers. That is, a declaration such as:
+            " int &ri = i; " if it's not optimized away entirely, allocates the same amount of storage as a pointer,
+            and places the address of i into that storage. So, a pointer and a reference both occupy the same amount of memory.
+
+    * Smart pointers
+        * std::unique_ptr
+            * owns and manages another object through a pointer and deletes the object when unique_ptr goes out of scope
+            * no other smart pointers can point to the object. doesn't have a copy constructor.
+            * examples:
+                std::unique_ptr<int>    p1(new int);
+                std::unique_ptr<int[]>  p2(new int[50]);
+                std::unique_ptr<Object> p3(new Object("Lamp"));
+
+            * try to use "make_unique" function to create the pointer:
+                std::unique_ptr<int>    p1 = std::make_unique<int>();
+                std::unique_ptr<int[]>  p2 = std::make_unique<int[]>(50);
+                std::unique_ptr<Object> p3 = std::make_unique<Object>("Lamp");
+
+        * std::shared_ptr
+            * owns and manages another object through a pointer
+            * there can be multiple references to the same object
+            * internal reference counter keeps track of each shared_ptr that goes out of scope. when counter hits 0, deletes the object.
+            * beware of circular references
+            * examples:
+                std::shared_ptr<int>    p1(new int);
+                std::shared_ptr<Object> p3(new Object("Lamp"));
+
+            * try to use "make_unique" function to create the pointer:
+                std::shared_ptr<int>    p1 = std::make_shared<int>();
+                std::shared_ptr<Object> p3 = std::make_shared<Object>("Lamp");
+
+        * std::weak_ptr
+            * a shared_ptr that doesn't increase the reference count
+            * holds a non-owning(weak) reference to an object that is managed by another std::shared_ptr
+            * can only create a weak_ptr out of a shared_ptr or another weak_ptr
+            * examples:
+                (p_weak1 and p_weak2 do not increase the reference count on p_shared)
+                std::shared_ptr<int> p_shared = std::make_shared<int>(100);
+                std::weak_ptr<int>   p_weak1(p_shared);
+                std::weak_ptr<int>   p_weak2(p_weak1);
+
+            * weak_ptr is like an inspector on shared_ptr. Must convert it to shared_ptr with "lock()" to operate on object:
+                std::shared_ptr<int> p_shared = std::make_shared<int>(100);
+                std::weak_ptr<int>   p_weak(p_shared);
+                // ...
+                std::shared_ptr<int> p_shared_orig = p_weak.lock()
+
+            * reasons for inspector mode:
+                * can use the "expired()" method which checks whether the referenced object was already deleted
+                * you can attempt to promote the weak_ptr to strong using "lock()":
+                    * if succeeds, you get a strong pointer to the object
+                    * if fails, then that object no longer exists (and we can throw away the weak_ptr)
+                * dangling ptr problem: it's impossible to know if raw pointer referenced data has been deallocated or not
+
+
+========== stdlib
+* std::vector
+    * examples
+        * std::vector<int> first;             // empty vector of ints
+        * std::vector<int> second (4, 100);   // four ints with value 100
+
+    * "vector::emplace_back"
+        * inserts a new element at the end of the vector
+
+* std::async()
+    * function template that accepts a callback as an argument and potentially executes them asynchronously
+
+    * example:
+
+        #include <chrono>
+        #include <thread>
+        #include <string>
+
+        std::string fetchDataFromDB(std::string recvdData) {
+            std::this_thread::sleep_for(seconds(5));
+
+            return "stuff" + recvdData;
+        }
+
+        int main() {
+            system_clock::time_point start = system_clock::now();
+            std::future<std::string> resultFromDB = std::async(std::launch::async, fetchDataFromDB, "Data");
+
+            // Fetch Data from DB
+            // Will block till data is available in future<std::string> object
+            std::string dbData = resultFromDB.get();
+ 
+            // Get End Time
+            auto end = system_clock::now();
+        
+            auto diff = duration_cast < std::chrono::seconds > (end - start).count();
+            std::cout << "Total Time Taken = " << diff << " Seconds" << std::endl;
+
+            return 0;
+        }
+
+
+========== Classes
+* Access Modifiers
+    * public: can be accessed by any other code in the same assembly or another assembly that references it
+    * private: can be accessed by code in the same class or struct
+    * protected: can be accessed by code in the same class or struct, or in a derived class 
+
+    * For Inheritance:
+        * public: all members from base class are inherited as there are specified in the base class
+
+        * private:
+            * all members from base class are inherited as private
+            * private members stay private and protected and public members become private
+            * this does not affect the way the derived class accesses members inherited from its parent
+            * it only affects the code trying to access those members through the derived class. 
+
+        * protected: public and private members become protected, and private members stay private.
   
-Input/Output:
-1. cin
-2. cout
-3. cerr
-4. clog
+        * friend:
+            * can access the private and protected members of the class in which it is declared as a friend
+            * friendships are not symmetric.
+            * friendships are not transitive.
+            * friendships are not inherited.
+            * access due to friendship is inherited.
 
-  Out:
+* Overriding Functions
+    * When a derived class creates a member function with the same return type
+      and signature as a member function in the base class, but with a new implementation.
+
+* Virtual
+    * without "virtual" you "early binding"
+        * which implementation of the method is used gets decided at compile time based on the type of the
+          pointer that you call through.
+
+    * with "virtual" you get "late binding"
+        * which implementation of the method is used gets decided at run time based in the type of the pointed-to 
+          object - what is was originally constructed as. 
+
+    * To implement virtual functions, C++ uses a special form of late binding known as the virtual table
+        * The virtual table is a lookup table of functions used to resolve function calls in a dynamic/late binding manner
+        * Every class that uses virtual functions or is derived from a class that uses virtual functions is given it's own virtual table
+        * It's simply a static array that the compiler sets up at compile time.  
+
+* Nested Classes
+    * class which is declared in another enclosing class.
+    * the usual access rules are obeyed. 
+    * a nested class is a member and as such has the same access rights (to enclosing
+      class) as any other member
+    * the nested class can access private variables.
+
+
+========== Input/Output
+* Types: cin, cout, cerr, clog
+
+* Out example:
     cout << "string \n";
 
-  In:
+* In example:
     int age;
     cin >> age;
 
-Forward Declaration:
-Use if only a pointer is needed to a class.
-If pointer is dereferenced in the file, must use header.
-Avoids unnecssary parsing of header files during compilation.
 
-Tells the compiler that the type exists, but compiler does not know size,
-members, or methods. 
-Considered an incomplete type. 
-Cannot use the type to declare a member, or a base class, since the compiler
-would need to know the layout of the type. 
+========== Misc
+* Forward Declaration
+    * Use if only a pointer is needed to a class.
+    * If pointer is dereferenced in the file, must use header.
+    * Avoids unnecssary parsing of header files during compilation.
 
-http://stackoverflow.com/questions/553682/when-can-i-use-a-forward-declaration
+    * Tells the compiler that the type exists, but compiler does not know size, members, or methods. 
+    * Considered an incomplete type. 
+    * Cannot use the type to declare a member, or a base class, since the compiler would need to know the layout of the type. 
 
-
-Friend Class: 
-can access the private and protected members of the class in which it is declared
-  as a friend
-1.  friendships are not symmetric.
-2.  friendships are not transitive.
-3.  friendships are not inherited.
-4.  access due to friendship is inherited.
-
-Key Words
-  Static:
-    static class: non-extant in C++
-
-    static member data and functions exist not in the object but in the scope
-    of the class. Therefore, they can be called without having an object of
-    that class.
-
-    static member data: shared between all instances of a class
-     *no storage space set aside for static members as a result of instantiating
-      a class object. The static member data must be defined outside
-      instantiation of a class object. 
-
-    static member function: can be called without needing an object of class.
-
-    static variables in functions: to keep persistent variable within scope 
-    of a function.
-
-  Const:
-    use for variables that cannot be changed
-    use in function definition to say that the function will not modify
-      any variables in function body
-
-  Volatile:
-    volatile may have no effect on a field if the volatile field exceeds
-      the max size that can be copied on the current architecture by 
-      using one instruction
-
-  Overriding Functions:
-    When a derived class creates a member function with the same return type
-      and signature as a member function in the base class, but with a new
-      implementation.
-
-  Virtual:
-    without "virtual" you "early binding". which implementation of the 
-      method is used gets decided at compile time based on the type of the
-      pointer that you call through.
-
-    with "virtual" you get "late binding". which implementation of the method 
-      is used gets decided at run time based in the type of the pointed-to 
-      object - what is was originally constructed as. 
-
-    To implement virtual functions, C++ uses a special form of late binding
-      known as the virtual table. The virtual table is a lookup table of
-      functions used to resolve function calls in a dynamic/late binding 
-      manner. Every class that uses virtual functions or is derived from a
-      class that uses virtual functions is given it's own virtual table. It's
-      simply a static array that the compiler sets up at compile time.  
+    * http://stackoverflow.com/questions/553682/when-can-i-use-a-forward-declaration
 
 
-  Binding: refers to the process that is used to convert identifiers (variables
-    and function names) into machine language addresses. 
+* Binding
+    * refers to the process that is used to convert identifiers (variables and function names) into machine language addresses. 
   
-  Early Binding: also called static. the precise function's address is known at
-    compilation. what a standard function uses.
+    * Early Binding
+        * also called static
+        * the precise function's address is known at compilation
 
-  Late Binding: also called dynamic. the function's address is not known until
-    runtime. function pointers are considered late binding.
-
-
-  Signature:
-    of a function is its name, as wella s the number and type of its parameters.
-    the signature does not include the return type.
-
-  *Passing pointers to array elements. An array is often passed to a function as 
-    a pointer to an element. They lose their size, so that the receiving function
-    cannot directly tell how many elements are pointed to.
+    * Late Binding
+        * also called dynamic
+        * the function's address is not known until runtime
+        * examples:
+            * function pointers are considered late binding.
+            * using virtual functions which require the virtual table
 
 
-Nested Classes: 
-  class which is declared in another enclosing class. the members of an
-  enclosing class have no special access to members of a nested class. the 
-  usual access rules are obeyed. 
+========== Key Words
+* "constexpr"
+    * declares that it is possible to evaluate the value of a function or variable at compile time
+    * used instead of #DEFINE (scoping, namespace, and preprocessor replace) or
+        const (const vars cannot be used in compile time evals)
+
+* "auto"
+    * uses type inference to tell compiler to infer the variable's type from the initialized type
+    * useful for polymorphism and templates since we don't have to define a specific variable type
+    * example 1
+
+        std::map<std::string, std::string> mapOfStrs;
+        // Insert data in Map
+        mapOfStrs.insert(std::pair<std::string, std::string>("first", "1") );
+        mapOfStrs.insert(std::pair<std::string, std::string>("sec", "2") );
+
+        // now we want to iterate through the map. we have two options
+        std::map<std::string, std::string>::iterator it = mapOfStrs.begin();
+        // OR
+        auto it = mapOfStrs.begin();
+        while (it != mapOfStrs.end());
 
 
-  c++03 Standard 11.8:
-  except by using explicit pointers, references, and object names... declarations
-  in a nested class shall not use non-static data members or non-static member 
-  functions from the enclosing class
+    * example 2 (used as return type of function)
 
-  c++11 Standard 11.7:
-  a nested class is a member and as such has the same access rights (to enclosing
-  class) as any other member. the nested class can access private variables.
-
-////////////////////////////////
-  References:
-    1.  a reference is a name constant for an address. you need to initialize the 
-        reference during declaration. once a reference is established to a variable,
-        you cannot change the reference to reference another variable. 
-          int & iRef; // error
-
-    2. no special syntax is needed for derefercing or referencing.
-
-    3. in the general case, compilers usually implement references as pointers. 
-       but they generally have more information about what a reference may 
-       point to, and use that for optimization. 
-
-    4. int i = 5;
-       int & j = i; 
-       everywhere the reference j is encountered, it is replaced with 
-       the address of i. the reference content address is resolved at compile time
-       and there is no need to dereference it like a ptr at run time.  
+        auto sum(int x, int y) -> int {
+            return x = y;
+        }
+        auto value = sum(3, 5);
 
 
-A pointer can be re-assigned any number of times while a reference can not be re-seated after binding.
-Pointers can point nowhere (NULL), whereas reference always refer to an object.
-You can't take the address of a reference like you can with pointers.
-There's no "reference arithmetics" (but you can take the address of an object pointed by a reference and do pointer arithmetics on it as in &obj + 5).
-To clarify a misconception:
+* "decltype"
+    * extracts the type from the variable or passed in expression
+    * primarily used in generic programming, where it is difficult to express types taht depend on template params
+    * examples
+        int fun1() {return 10;}
 
-The C++ standard is very careful to avoid dictating how a compiler must implement references, but every C++ compiler implements references as pointers. That is, a declaration such as:
+        int main() {
+            float foo = 2.0;
 
-int &ri = i;
-if it's not optimized away entirely, allocates the same amount of storage as a pointer, and places the address of i into that storage.
-So, a pointer and a reference both occupy the same amount of memory.
+            // data type x is the same as return type of fun1()
+            decltype(fun1()) x;
 
-As a general rule,
+            // data type y is float (same as foo)
+            decltype(foo) y;
 
-Use references in function parameters and return types to define useful and self-documenting interfaces.
-Use pointers to implement algorithms and data structures.
+            return 0;
+        }
 
-////////////////////////////////
+* "explicit"
+    * specifies that a constructor is explicit, that is, it cannot be used for implicit conversions and copy-initialization
+* "noexcept"
+    * compile time check that returns true if an expression is declared to not throw any exceptions
 
-    *** SYNTAX ***
-foo *array[10];   // array of 10 foo pointers
-foo (*array)[10]; // pointer to array of 10 foos
+* "static"
+    * static class: does not exist in C++
+
+    * static member data and function: exist not in the object but in the scope of the class.
+      Therefore, they can be called without having an object of that class.
+
+    * static member data: shared between all instances of a class
+
+    * static member function: can be called without needing an object of class.
+
+    * no storage space set aside for static members as a result of instantiating a class object.
+      The static member data must be defined outside instantiation of a class object. 
+
+    * static local variables (in functions): to keep persistent variable within scope of a function.
+
+* "const"
+    * const variables: variables that cannot be changed
+    * const in method definition: indicate that the function will not modify any variables in function body
+
+* "volatile":
+    * same use as in C
+    * volatile may have no effect on a field if the volatile field exceeds the max size that can be copied
+      on the current architecture by using one instruction
 
 
-This is an array of 8 pointers to pointers to VirtualDevice:
-
-  VirtualDevice ***m_pVirtualDeviceTable;
-  m_pVirtualDeviceTable = new VirtualDevice **[DM_MAX_DEVICES];
-
+========== Syntax
+    * foo *array[10];   // array of 10 foo pointers
+    * foo (*array)[10]; // pointer to array of 10 foos
 
 
-QUESTIONS:
+    * This is an array of 8 pointers to pointers to VirtualDevice:
+        VirtualDevice ***m_pVirtualDeviceTable;
+        m_pVirtualDeviceTable = new VirtualDevice **[DM_MAX_DEVICES];
+
+
+
+
+========== Questions (TODO)
 1. What is the lifetime of a static variable in side a function that is a member of a class?
 
 ////////////////////////////////
@@ -277,22 +428,3 @@ Object files (produced from compiler) only need function declarations, not defin
 requires definitions to resolve symbols for creation of an executable. 
 
 Does the linker need definitions when creating a library? 
-
-///////////////////////////////
-References vs Pointers
-
-Pointer Declaration:
-int i = 3;
-int *pi = &i;
-*pi = 4;   // change i to 4
-
-Reference Declaration:
-int i = 3;
-int &ri = i;
-ri = 4;   // change i to 4
-
-
-> Must use * operator to dereference ptr, but no operator to dereference a reference
->
-
-
