@@ -3,63 +3,49 @@ filetype off                  " required
 
 if has('win32') || has('win64')
     set fileformat=unix
-    set rtp+=%HOME%/vimfiles/bundle/Vundle.vim/
-    " set the runtime path to include Vundle and initialize
-    " alternatively, pass a path where Vundle should install plugins
-    "call vundle#begin('~/some/path/here')
-    "set runtimepath=$HOME/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,$HOME/.vim/after
-    call vundle#begin('$USERPROFILE/vimfiles/bundle/')
+    "set rtp+=%HOME%/vimfiles/bundle/Vundle.vim/
+    call plug#begin('$USERPROFILE/vimfiles/plugged/')
 else
-    set rtp+=~/.vim/bundle/Vundle.vim
-    call vundle#begin()
-endif
+    " automatic install of vim-plug if not present
+    if empty(glob('~/.vim/autoload/plug.vim'))
+    silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+        \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+    endif
 
-" let Vundle manage Vundle, required
-Plugin 'VundleVim/Vundle.vim'
+    "set rtp+=~/.vim/bundle/Vundle.vim
+    call plug#begin('~/.vim/plugged')
+endif
 
 " Install L9 and avoid a Naming conflict if you've already installed a
 " different version somewhere else.
-Plugin 'ascenator/L9', {'name': 'newL9'}
+Plug 'ascenator/L9', {'name': 'newL9'}
 
-" The following are examples of different formats supported:
-" plugin from http://vim-scripts.org/vim/scripts.html
-"Plugin 'L9'
+Plug 'bling/vim-airline'
+Plug 'scrooloose/nerdtree'
+Plug 'ctrlpvim/ctrlp.vim'
+Plug 'nanotech/jellybeans.vim'
+Plug 'mhinz/vim-startify'
+Plug 'fholgado/minibufexpl.vim'
+Plug 'scrooloose/nerdcommenter'
+Plug 'ervandew/supertab'
+Plug 'majutsushi/tagbar'
+Plug 'wesQ3/vim-windowswap'
+Plug 'godlygeek/tabular'
+Plug 'rking/ag.vim'
+Plug 'universal-ctags/ctags'
+Plug 'junegunn/goyo.vim'
+Plug 'easymotion/vim-easymotion'
+Plug 'nathanaelkane/vim-indent-guides'
+"Plug 'neoclide/coc.nvim', {'branch': 'release'}
+"Plug 'SirVer/ultisnips'
+"Plug 'honza/vim-snippets'
+"Plug 'tpope/vim-fugitive'
+"Plug 'vim-scripts/cscope.vim'
+"Plug 'simplyzhao/cscope_maps.vim'
 
-" Git plugin not hosted on GitHub:
-"Plugin 'git://git.wincent.com/command-t.git'
-
-" git repos on your local machine (i.e. when working on your own plugin):
-"Plugin 'file:///home/gmarik/path/to/plugin'
-
-" plugin on GitHub repo:
-Plugin 'bling/vim-airline'
-Plugin 'scrooloose/nerdtree'
-Plugin 'ctrlpvim/ctrlp.vim'
-Plugin 'nanotech/jellybeans.vim'
-Plugin 'mhinz/vim-startify'
-Plugin 'fholgado/minibufexpl.vim'
-Plugin 'scrooloose/nerdcommenter'
-Plugin 'ervandew/supertab'
-Plugin 'majutsushi/tagbar'
-Plugin 'wesQ3/vim-windowswap'
-Plugin 'godlygeek/tabular'
-Plugin 'rking/ag.vim'
-Plugin 'universal-ctags/ctags'
-Plugin 'junegunn/goyo.vim'
-Plugin 'easymotion/vim-easymotion'
-Plugin 'nathanaelkane/vim-indent-guides'
-"Plugin 'SirVer/ultisnips'
-"Plugin 'honza/vim-snippets'
-"Plugin 'tpope/vim-fugitive'
-"Plugin 'vim-scripts/cscope.vim'
-"Plugin 'simplyzhao/cscope_maps.vim'
-
-" All of your Plugins must be added before the following line
-call vundle#end()            " required
-filetype plugin indent on    " required
-" To ignore plugin indent changes, instead use:
-"filetype plugin on
-" Put your non-Plugin stuff after this line
+" end plugins
+call plug#end()
 
 "set guifont=*      " opens up font menu
 if has ('gui_running')
@@ -178,6 +164,7 @@ nnoremap <Leader><Leader>u :TlistToggle<CR>
 nnoremap <Leader><Leader>i :MBEToggle<CR>
 nnoremap <Leader><Leader>o :NERDTreeToggle<CR>
 nnoremap <Leader><Leader>p :CtrlP<CR>
+nnoremap <Leader><Leader>l :CtrlPBuffer<CR>
 "nmap <C-k7> :e buffer 
 " hold down Ctrl and hjkl
 nnoremap <c-h> <c-w>h
