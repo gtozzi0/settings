@@ -176,6 +176,63 @@
             return 0;
         }
 
+* std::function()
+    * Container for holding function-like objects. Commonly used as alternative to function pointers.
+    * Retains state within scope (function pointers do not)
+
+    * Can typedef a function pointer like so:
+
+        typedef std::function<unsigned int(int request &, int response *)> fn_ReqRes;
+
+        struct ControlHandler {
+            unsigned int handler(int req &, int res *) {
+                return 0;
+            }
+        };
+
+        fn_ReqRes my_handler{ ControlHandler() };
+        res = my_handler(arg1, arg2);
+
+    * If we wanted to use it to store lambda
+        fn_ReqRest = [](int a, int b) {return 0};
+
+========== Lambda
+* std::function vs function ptr vs lambda
+
+    * std::function
+        * retains state in scope
+        * requires syntactic overhead of a class definition
+        * most flexible
+    * function pointer
+        * minimal syntactic overhead
+        * does not retain state within a scope
+    * lambda
+        * combines benefits of function pointers and function objects and avoid disadvantages
+        * compared to function obj:
+            * lambda is flexible and can maintain state
+            * compact syntax doesn't require an explicit class definition
+
+* In simple cases, the return type of the lambda is deduced by compiler for you:
+    [](double d) {return d < 0.00001 ? 0 : d; }
+
+* More complex lambdas where compiler can't deduce. If so, can explicitly specify return type
+    * [](double d) -> double {
+          if (d < 0.0001) {
+              return 0;
+          } else {
+              return d;
+          }
+      }
+
+* So far we've not used anything other than what was passed to the lambda within it,
+  but we can also use other variables, within the lambda
+
+    [&var] capture scope var by reference
+    [&] captures all variables used in the lambda by reference
+    [=] captures all variables used in the lambda by value
+    [&, var] captures variables like with [&], but var by value
+    [=, &var] captures variables like with [=], but var by reference
+
 
 ========== Classes
 * Access Modifiers
