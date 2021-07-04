@@ -2,22 +2,50 @@
  NOTES
 -----------------------------------------------------------------------------
 easymotion: <leader><leader>w
-nerdcommenter:
-comment out current line or selected text: <leader>cc
-comment out selected text with block     : <leader>cs
-uncomments selected lines                : <leader>cu
-comment out current lines but yank first : <leader>cy
-toggle comments on selected lines        : <leader>c<space>
 
-:setlocal foldmethod=syntax
-create fold: zf {motion}
-open   fold: zo
-delete fold: zd
+    <Plug>(easymotion-s)                                    *<Plug>(easymotion-s)*
+                                                        *<Plug>(easymotion-bd-f)*
+                    Find {char} to bidirection(forward and backward at the same
+                    time.) See |f| & |F|.
 
-set foldmethod=indent   
-set foldnestmax=10
-set nofoldenable
-set foldlevel=2
+    <Plug>(easymotion-bd-t)                               *<Plug>(easymotion-bd-t)*
+                    Till before & after the {char}. See |t| & |T|.
+
+    <Plug>(easymotion-bd-w)                               *<Plug>(easymotion-bd-w)*
+                    Beginning of word forward and backward. See |w| & |b|.
+
+    <Plug>(easymotion-bd-W)                               *<Plug>(easymotion-bd-W)*
+                    Beginning of WORD forward and backward. See |W| & |B|.
+
+    <Plug>(easymotion-bd-e)                               *<Plug>(easymotion-bd-e)*
+                    End of word forward and backward. See |e| & |ge|.
+
+    <Plug>(easymotion-bd-E)                               *<Plug>(easymotion-bd-E)*
+                    End of WORD forward and backward. See |E| & |gE|.
+
+    <Plug>(easymotion-bd-jk)                             *<Plug>(easymotion-bd-jk)*
+                    Line downward and upward. See |j| & |k|.
+
+    <Plug>(easymotion-bd-n)                               *<Plug>(easymotion-bd-n)*
+                    Jump to latest "/" or "?" forward. See |n| & |N|.
+
+                                                    *easymotion-overwin-motions*
+    nerdcommenter:
+    comment out current line or selected text: <leader>cc
+    comment out selected text with block     : <leader>cs
+    uncomments selected lines                : <leader>cu
+    comment out current lines but yank first : <leader>cy
+    toggle comments on selected lines        : <leader>c<space>
+
+    :setlocal foldmethod=syntax
+    create fold: zf {motion}
+    open   fold: zo
+    delete fold: zd
+
+    set foldmethod=indent   
+    set foldnestmax=10
+    set nofoldenable
+    set foldlevel=2
 
 * AG
 use ag         : <leader> a
