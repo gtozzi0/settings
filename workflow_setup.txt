@@ -1,0 +1,162 @@
+TMUX Connect Remote via SSH
+* ssh gtozzi@10.14.149.37 -t tmux a -t ml2
+
+TODO
+* Port .tmux.conf
+    * Do I need the tmux sensible plugin? Its just settings
+* Port .vimrc to neovim config
+* Determine which old vim plugs to bring over to neovim
+
+INSTALLING NERD FONTS (for the primary ubuntu terminal)
+* On Windows, unzip the fonts, select them, right click on them and choose install
+* TODO: figure out how to enable ligatures in Windows terminal
+
+NEOVIM INSTALL UBUNTU
+* Install node with nvm
+    * curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+    * nvm install node
+* Don't install neovim with apt (installs old version)
+    * Install via ppa
+        * sudo add-apt-repository ppa:neovim-ppa/unstable
+        * sudo apt update
+        * sudo apt install neovim
+    * Install by downloading from releases
+        * Then you have to run this from the directory
+        * NOTE: I couldn't figure out where to put all the /share files at
+        * /usr/bin/nvim
+        * /usr/share/nvim/runtime
+        * /usr/local/lib/nvim
+
+ERRORS
+* Getting error with Mason installing black, pylint, and another
+    * Need to run "sudo apt install python3-venv"
+
+LOCATIONS
+* For neovim vs vim, the directories are as such:
+    * ~/.vim is ~/.config/nvim
+    * ~/.vimrc is ~/.config/nvim/init.vim
+* ~/.local/share/nvim
+* ~/.config/nvim
+* ~/.tmux.conf
+
+PLUGINS
+* Remember to explicitly put treesitter into the plugins table
+
+UNINSTALL NEOVIM
+* do this to get the /usr/share/nvim stuff to regenerate
+* sudo apt --purge remove neovim
+
+LINKS
+* https://www.josean.com/posts/how-to-setup-neovim-2024
+* https://github.com/josean-dev/dev-environment-files
+* https://dotfyle.com/neovim/colorscheme/top
+
+
+Nvim Tree File Explorer
+    keymap.set("n", "<leader>ee", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle file explorer" })
+    keymap.set("n", "<leader>ef", "<cmd>NvimTreeFindFileToggle<CR>", { desc = "Toggle file explorer on current file" })
+    keymap.set("n", "<leader>ec", "<cmd>NvimTreeCollapse<CR>", { desc = "Collapse file explorer" })
+    keymap.set("n", "<leader>er", "<cmd>NvimTreeRefresh<CR>", { desc = "Refresh file explorer" })
+
+Telescope Fuzzy Finder
+    keymap.set("n", "<leader>ff", "<cmd>Telescope find_files<cr>", { desc = "Fuzzy find files in cwd" })
+    keymap.set("n", "<leader>fr", "<cmd>Telescope oldfiles<cr>", { desc = "Fuzzy find recent files" })
+    keymap.set("n", "<leader>fs", "<cmd>Telescope live_grep<cr>", { desc = "Find string in cwd" })
+    keymap.set("n", "<leader>fc", "<cmd>Telescope grep_string<cr>", { desc = "Find string under cursor in cwd" })
+    keymap.set("n", "<leader>ft", "<cmd>TodoTelescope<cr>", { desc = "Find todos" })
+    
+rmagatti/auto-session
+    keymap.set("n", "<leader>wr", "<cmd>SessionRestore<CR>", { desc = "Restore session for cwd" })
+    keymap.set("n", "<leader>ws", "<cmd>SessionSave<CR>", { desc = "Save session for auto session root dir" })
+
+szw/vim-maximizer
+    * Minimize/maximize split windows
+    * Can use 'F3' to toggle or the below
+    { "<leader>sm", "<cmd>MaximizerToggle<CR>", desc = "Maximize/minimize a split" },
+
+Auto-completion
+    mapping = cmp.mapping.preset.insert({
+    ["<C-k>"] = cmp.mapping.select_prev_item(), -- previous suggestion
+    ["<C-j>"] = cmp.mapping.select_next_item(), -- next suggestion
+    ["<C-b>"] = cmp.mapping.scroll_docs(-4),
+    ["<C-f>"] = cmp.mapping.scroll_docs(4),
+    ["<C-Space>"] = cmp.mapping.complete(), -- show completion suggestions
+    ["<C-e>"] = cmp.mapping.abort(), -- close completion window
+    ["<CR>"] = cmp.mapping.confirm({ select = false }),
+    }),
+
+folke/todo-comments.nvim
+    keymap.set("n", "]t", function()
+      todo_comments.jump_next()
+    end, { desc = "Next todo comment" })
+
+    keymap.set("n", "[t", function()
+      todo_comments.jump_prev()
+    end, { desc = "Previous todo comment" })
+
+gbprod/substitute.nvim
+    * allows us to use 's' followed by a motion to substitute text that was prev copied
+    vim.keymap.set("n", "s", substitute.operator, { desc = "Substitute with motion" })
+    vim.keymap.set("n", "ss", substitute.line, { desc = "Substitute line" })
+    vim.keymap.set("n", "S", substitute.eol, { desc = "Substitute to end of line" })
+    vim.keymap.set("x", "s", substitute.visual, { desc = "Substitute in visual mode" })
+
+neovim/nvim-lspconfig
+    opts.desc = "Show LSP references"
+    keymap.set("n", "gR", "<cmd>Telescope lsp_references<CR>", opts) -- show definition, references
+
+    opts.desc = "Go to declaration"
+    keymap.set("n", "gD", vim.lsp.buf.declaration, opts) -- go to declaration
+
+    opts.desc = "Show LSP definitions"
+    keymap.set("n", "gd", "<cmd>Telescope lsp_definitions<CR>", opts) -- show lsp definitions
+
+    opts.desc = "Show LSP implementations"
+    keymap.set("n", "gi", "<cmd>Telescope lsp_implementations<CR>", opts) -- show lsp implementations
+
+    opts.desc = "Show LSP type definitions"
+    keymap.set("n", "gt", "<cmd>Telescope lsp_type_definitions<CR>", opts) -- show lsp type definitions
+
+    opts.desc = "See available code actions"
+    keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts) -- see available code actions, in visual mode will apply to selection
+
+    opts.desc = "Smart rename"
+    keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts) -- smart rename
+
+    opts.desc = "Show buffer diagnostics"
+    keymap.set("n", "<leader>D", "<cmd>Telescope diagnostics bufnr=0<CR>", opts) -- show  diagnostics for file
+
+    opts.desc = "Show line diagnostics"
+    keymap.set("n", "<leader>d", vim.diagnostic.open_float, opts) -- show diagnostics for line
+
+    opts.desc = "Go to previous diagnostic"
+    keymap.set("n", "[d", vim.diagnostic.goto_prev, opts) -- jump to previous diagnostic in buffer
+
+    opts.desc = "Go to next diagnostic"
+    keymap.set("n", "]d", vim.diagnostic.goto_next, opts) -- jump to next diagnostic in buffer
+
+    opts.desc = "Show documentation for what is under cursor"
+    keymap.set("n", "K", vim.lsp.buf.hover, opts) -- show documentation for what is under cursor
+
+    opts.desc = "Restart LSP"
+    keymap.set("n", "<leader>rs", ":LspRestart<CR>", opts) -- mapping to restart lsp if necessary
+
+folke/trouble.nvim
+  keys = {
+    { "<leader>xw", "<cmd>Trouble diagnostics toggle<CR>", desc = "Open trouble workspace diagnostics" },
+    { "<leader>xd", "<cmd>Trouble diagnostics toggle filter.buf=0<CR>", desc = "Open trouble document diagnostics" },
+    { "<leader>xq", "<cmd>Trouble quickfix toggle<CR>", desc = "Open trouble quickfix list" },
+    { "<leader>xl", "<cmd>Trouble loclist toggle<CR>", desc = "Open trouble location list" },
+    { "<leader>xt", "<cmd>Trouble todo toggle<CR>", desc = "Open todos in trouble" },
+  },
+
+ggandor/leap.nvim
+    * s {char}{char}
+    * S {char}{char}
+
+windwp/nvim-autopairs
+
+numToStr/Comment.nvim
+
+kylechui/nvim-surround
+
